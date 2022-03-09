@@ -1,0 +1,8 @@
+signature size - 96 bytes
+randomness size -  32 bytes
+public_key size - 48 bytes
+
+sha256(signature)  -
+ f6c44dd006799e267e4db91ca9f6b4a518e6d7f5c86275b7974c94ef62860bad
+ 01422076666e4b71315a098338f0326dfa400474f4a5ed6ac5b5eb3e94820f30
+ 622e1927e3ff595946ef8d1fb4c7f9cc7330c262f49c3f64fddb9abee4dae9ea

@@ -1,7 +1,7 @@
 %lang starknet
 %builtins range_check bitwise
 
-from sha256 import finalize_sha256, sha256
+from contracts.lib.sha256.sha256 import finalize_sha256, sha256
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.cairo_builtins import BitwiseBuiltin
 

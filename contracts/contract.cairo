@@ -1,5 +1,5 @@
-# Declare this file as a StarkNet contract and set the required
-# builtins.
+%lang starknet
+
 %builtins pedersen range_check
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin
@@ -33,6 +33,8 @@ end
 func verify{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(pload : payload) -> (
         res : felt):
     # append the bytes of the signature to the previous round, then sha256 hash
+    let (prev) = prev_sig.read()
+    let msg_unhashed = pload.round + prev
 
-    let msg_unhashed = pload.round + prev_sig.read()
+    return ()
 end
