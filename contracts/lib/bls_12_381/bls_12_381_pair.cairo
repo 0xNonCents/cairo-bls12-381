@@ -1,11 +1,11 @@
-from bigint import BigInt3, nondet_bigint3, bigint_mul, UnreducedBigInt5
-from alt_bn128_def import P0, P1, P2
-from contracts.lib.bls_12_381.alt_bn128_field import (
+from contracts.lib.bigint.bigint6 import BigInt6, nondet_bigint6, bigint_mul, UnreducedBigInt5
+from contracts.lib.bls_12_381.bls_12_381_def import P0, P1, P2
+from contracts.lib.bls_12_381.bls_12_381_field import (
     is_zero, FQ12, verify_zero5, fq12_is_zero, nondet_fq12, fq12_one, fq12_diff, fq12_pow_12,
     fq12_pow_3, fq12_zero)
-from alt_bn128_g1 import G1Point, compute_doubling_slope, compute_slope
-from alt_bn128_g2 import G2Point
-from alt_bn128_gt import (
+from contracts.lib.bls_12_381.bls_12_381_g1 import G1Point, compute_doubling_slope, compute_slope
+from contracts.lib.bls_12_381.bls_12_381_g2 import G2Point
+from contracts.lib.bls_12_381.bls_12_381_gt import (
     GTPoint, gt_slope, gt_doubling_slope, twist, g1_to_gt, fq12_mul, gt_double, gt_add)
 
 const ate_loop_count = 29793968203157093288
@@ -106,7 +106,7 @@ func gt_linehelp{range_check_ptr}(pt0 : GTPoint, pt1 : GTPoint, t : GTPoint, slo
     let (res : FQ12) = nondet_fq12()
     # TODO VERIFY
     # let (x_diff_slope : UnreducedBigInt5) = bigint_mul(
-    #     BigInt3(d0=t.x.d0 - pt1.x.d0, d1=t.x.d1 - pt1.x.d1, d2=t.x.d2 - pt1.x.d2), slope)
+    #     BigInt6(d0=t.x.d0 - pt1.x.d0, d1=t.x.d1 - pt1.x.d1, d2=t.x.d2 - pt1.x.d2), slope)
 
     # verify_zero5(
     #     UnreducedBigInt5(
@@ -145,7 +145,7 @@ func miller_loop{range_check_ptr}(Q : GTPoint, P : GTPoint, R : GTPoint, n : fel
     # END OF LOOP
     if n == 0:
         alloc_locals
-        let modulus = BigInt3(P0, P1, P2)
+        let modulus = BigInt6(P0, P1, P2, P3, P4, P5)
         let (_, local q1x) = fq12_pow_3(Q.x, modulus)
         let (_, local q1y) = fq12_pow_3(Q.y, modulus)
         let Q1 = GTPoint(q1x, q1y)
@@ -194,18 +194,18 @@ end
 
 func final_exponentiation{range_check_ptr}(x : FQ12) -> (res : FQ12):
     let final_exponent = FQ12(
-        BigInt3(d0=6212946889023415678071072, d1=45799200417935711304343445, d2=42770771512020533619734522),
-        BigInt3(d0=59170517635015779814843574, d1=69861904660805168774244518, d2=18175251611003261941144987),
-        BigInt3(d0=6224840365716485556659866, d1=72079669560153613533475076, d2=54097091982365706908871098),
-        BigInt3(d0=23778027891331508348714600, d1=27070990064893031605816996, d2=66880530963181666257122137),
-        BigInt3(d0=6428453163241839293638384, d1=3915066362894641347128887, d2=57669624004488276782181297),
-        BigInt3(d0=67978089800637315191356650, d1=51071509339440355656395904, d2=68120774182643646161376785),
-        BigInt3(d0=25088979566862161605950544, d1=63116802240563251842289738, d2=36250774203703337112865410),
-        BigInt3(d0=42045420448204954441533445, d1=76593899932297329118450698, d2=60079122095221526332763037),
-        BigInt3(d0=46087482279252059585677525, d1=41252762411239220367854994, d2=14786342199147618000549637),
-        BigInt3(d0=27452466885733176020010742, d1=32571718558893095687996369, d2=74875694450552131089070851),
-        BigInt3(d0=72489332814153009192769011, d1=9971105602881718038104912, d2=203128949104),
-        BigInt3(d0=0, d1=0, d2=0))
+        BigInt6(d0=6212946889023415678071072, d1=45799200417935711304343445, d2=42770771512020533619734522, d3=0, d4=0, d5=0),
+        BigInt6(d0=59170517635015779814843574, d1=69861904660805168774244518, d2=18175251611003261941144987, d3=0, d4=0, d5=0),
+        BigInt6(d0=6224840365716485556659866, d1=72079669560153613533475076, d2=54097091982365706908871098, d3=0, d4=0, d5=0),
+        BigInt6(d0=23778027891331508348714600, d1=27070990064893031605816996, d2=66880530963181666257122137, d3=0, d4=0, d5=0),
+        BigInt6(d0=6428453163241839293638384, d1=3915066362894641347128887, d2=57669624004488276782181297, d3=0, d4=0, d5=0),
+        BigInt6(d0=67978089800637315191356650, d1=51071509339440355656395904, d2=68120774182643646161376785, d3=0, d4=0, d5=0),
+        BigInt6(d0=25088979566862161605950544, d1=63116802240563251842289738, d2=36250774203703337112865410, d3=0, d4=0, d5=0),
+        BigInt6(d0=42045420448204954441533445, d1=76593899932297329118450698, d2=60079122095221526332763037, d3=0, d4=0, d5=0),
+        BigInt6(d0=46087482279252059585677525, d1=41252762411239220367854994, d2=14786342199147618000549637, d3=0, d4=0, d5=0),
+        BigInt6(d0=27452466885733176020010742, d1=32571718558893095687996369, d2=74875694450552131089070851, d3=0, d4=0, d5=0),
+        BigInt6(d0=72489332814153009192769011, d1=9971105602881718038104912, d2=203128949104, d3=0, d4=0, d5=0),
+        BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0))
 
     return fq12_pow_12(x, final_exponent)
 end

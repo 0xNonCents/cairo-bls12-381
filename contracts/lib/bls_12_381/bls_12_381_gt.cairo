@@ -1,9 +1,9 @@
-from bigint import BigInt6, nondet_bigint6, bigint_mul
-from contracts.lib.bls_12_381.alt_bn128_field import (
+from contracts.lib.bigint.bigint6 import BigInt6, nondet_bigint6, bigint_mul
+from contracts.lib.bls_12_381.bls_12_381_field import (
     fq_zero, is_zero, FQ12, nondet_fq12, fq12_eq_zero, fq12_sum, fq12_diff, fq12_is_zero, fq12_zero,
     unreducedFQ12)
-from alt_bn128_g1 import G1Point
-from alt_bn128_g2 import g2, G2Point
+from contracts.lib.bls_12_381.bls_12_381_g1 import G1Point
+from contracts.lib.bls_12_381.bls_12_381_g2 import g2, G2Point
 
 struct GTPoint:
     member x : FQ12
@@ -294,36 +294,36 @@ func gt_three() -> (res : GTPoint):
     return (
         GTPoint(
         FQ12(
-            BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0x98e185f0509de152,
+            BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0x98e185f0509de152,
                 d1=0x3505566b4edf48d4,
                 d2=0x722b8c153931579d,
                 d3=0x195e8aa5b7827463,
                 d4=0x00,
                 d5=0x00),
-            BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0),
-            BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0xc9824f32ffb66e85,
+            BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0),
+            BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0xc9824f32ffb66e85,
                 d1=0xbc04156b6878a0a7,
                 d2=0x735191cd5dcfe4eb,
                 d3=0x1014772f57bb9742,
                 d4=0x00,
                 d5=0x00),
-            BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0),
+            BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0),
             ),
         FQ12(
-            BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0),
-            BigInt3(d0=0x32a1b85386b9b39c,
+            BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0),
+            BigInt6(d0=0x32a1b85386b9b39c,
                 d1=0x37039a5a1633bbd9,
                 d2=0x9beb72787eb6f4bb,
                 d3=0x22e32ee3d607b095,
                 d4=0x00,
-                d5=0x00), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0),
-            BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0),
-            BigInt3(d0=0x452aeaca147711b2,
+                d5=0x00), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0),
+            BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0),
+            BigInt6(d0=0x452aeaca147711b2,
                 d1=0xdd9453ac49b55441,
                 d2=0x922ffcc2f38d3323,
                 d3=0x021e2335f3354bb7,
                 d4=0x00,
-                d5=0x00), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0),
+                d5=0x00), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0),
             )))
 end
 
@@ -331,36 +331,36 @@ func gt_negone() -> (res : GTPoint):
     return (
         GTPoint(
         FQ12(
-            BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0x1c78c659ed78407e,
+            BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0x1c78c659ed78407e,
                 d1=0xddcda4df1e9eaff8,
                 d2=0xd6949f86240cb7f7,
                 d3=0x23f336fd559fb538,
                 d4=0x00,
                 d5=0x00),
-            BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0),
-            BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0x97e485b7aef312c2,
+            BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0),
+            BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0x97e485b7aef312c2,
                 d1=0xf1aa493335a9e712,
                 d2=0x7260bfb731fb5d25,
                 d3=0x198e9393920d483a,
                 d4=0x00,
                 d5=0x00),
-            BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0),
+            BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0),
             ),
         FQ12(
-            BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0),
-            BigInt3(d0=0x7a0c59ab1abfd742,
+            BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0),
+            BigInt6(d0=0x7a0c59ab1abfd742,
                 d1=0x235168d4819a6885,
                 d2=0x4e97afe1a2213756,
                 d3=0x0e0e2b3a5ea16610,
                 d4=0x00,
-                d5=0x00), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0),
-            BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0),
-            BigInt3(d0=0xe673b13a075a65ec,
+                d5=0x00), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0),
+            BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0),
+            BigInt6(d0=0xe673b13a075a65ec,
                 d1=0xdb36395df7be3b99,
                 d2=0xcbb1ac09187524c7,
                 d3=0x275dc4a288d1afb3,
                 d4=0x00,
-                d5=0x00), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0),
+                d5=0x00), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0),
             )))
 end
 
@@ -368,36 +368,36 @@ func gt_negtwo() -> (res : GTPoint):
     return (
         GTPoint(
         FQ12(
-            BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0x4ea401a473348a22,
+            BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0x4ea401a473348a22,
                 d1=0x4ee9cd781eb70894,
                 d2=0xaf43cbf47739b252,
                 d3=0x2807259ae7bd1fed,
                 d4=0x00,
                 d5=0x00),
-            BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0),
-            BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0x9957ed8c3928ad79,
+            BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0),
+            BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0x9957ed8c3928ad79,
                 d1=0x6db86431c6d83584,
                 d2=0xb60121b83a733370,
                 d3=0x203e205db4f19b37,
                 d4=0x00,
                 d5=0x00),
-            BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0),
+            BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0),
             ),
         FQ12(
-            BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0),
-            BigInt3(d0=0x0141176a616d9998,
+            BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0),
+            BigInt6(d0=0x0141176a616d9998,
                 d1=0x3a84c4303d60a4fe,
                 d2=0x818a9ebdb9f23007,
                 d3=0x1e06524f57513745,
                 d4=0x00,
-                d5=0x00), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0),
-            BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0),
-            BigInt3(d0=0xa33f062687df1bf5,
+                d5=0x00), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0),
+            BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0),
+            BigInt6(d0=0xa33f062687df1bf5,
                 d1=0x627c1426199281b8,
                 d2=0x4624b9a1485000c0,
                 d3=0x1705c3cd29af2bc6,
                 d4=0x00,
-                d5=0x00), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0),
+                d5=0x00), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0),
             )))
 end
 
@@ -405,35 +405,35 @@ func gt_negthree() -> (res : GTPoint):
     return (
         GTPoint(
         FQ12(
-            BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0xb1abd5802108dd1d,
+            BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0xb1abd5802108dd1d,
                 d1=0xb7ddc67a3db217c1,
                 d2=0x6cf7d91219c76e2d,
                 d3=0x067b0926dbad9db7,
                 d4=0x00,
                 d5=0x00),
-            BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0),
-            BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0xc9824f32ffb66e85,
+            BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0),
+            BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0xc9824f32ffb66e85,
                 d1=0xbc04156b6878a0a7,
                 d2=0x735191cd5dcfe4eb,
                 d3=0x1014772f57bb9742,
                 d4=0x00,
                 d5=0x00),
-            BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0),
+            BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0),
             ),
         FQ12(
-            BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0),
-            BigInt3(d0=0x097ed3c351c349ab,
+            BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0),
+            BigInt6(d0=0x097ed3c351c349ab,
                 d1=0x607dd037523e0eb4,
                 d2=0x1c64d33e02ca63a2,
                 d3=0x0d811f8f0b29ef94,
                 d4=0x00,
-                d5=0x00), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0),
-            BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0),
-            BigInt3(d0=0xf6f5a14cc405eb95,
+                d5=0x00), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0),
+            BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0),
+            BigInt6(d0=0xf6f5a14cc405eb95,
                 d1=0xb9ed16e51ebc764b,
                 d2=0x262048f38df42539,
                 d3=0x2e462b3cedfc5472,
                 d4=0x00,
-                d5=0x00), BigInt3(d0=0, d1=0, d2=0), BigInt3(d0=0, d1=0, d2=0),
+                d5=0x00), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0), BigInt6(d0=0, d1=0, d2=0, d3=0, d4=0, d5=0),
             )))
 end

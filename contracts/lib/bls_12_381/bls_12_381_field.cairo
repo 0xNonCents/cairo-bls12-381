@@ -1,8 +1,9 @@
 from starkware.cairo.common.bitwise import bitwise_and
 from starkware.cairo.common.cairo_builtins import BitwiseBuiltin
 
-from bigint import BASE, BigInt6, UnreducedBigInt6, UnreducedBigInt10, nondet_bigint6, bigint_mul
-from alt_bn128_def import P0, P1, P2, P3, P4, P5
+from contracts.lib.bigint.bigint6 import (
+    BASE, BigInt6, UnreducedBigInt6, UnreducedBigInt10, nondet_bigint6, bigint_mul)
+from contracts.lib.bls_12_381.bls_12_381_def import P0, P1, P2, P3, P4, P5
 
 # FIELD STRUCTURES
 struct FQ2:
@@ -41,7 +42,7 @@ struct unreducedFQ12:
 end
 
 # FIELD CONSTANTS
-func fq_zero() -> (res : BigInt3):
+func fq_zero() -> (res : BigInt6):
     return (BigInt6(0, 0, 0, 0, 0, 0))
 end
 
@@ -72,7 +73,7 @@ func fq12_one() -> (res : FQ12):
         ))
 end
 
-func verify_zero6{range_check_ptr}(val : BigInt3):
+func verify_zero6{range_check_ptr}(val : BigInt6):
     alloc_locals
     local flag
     local q
@@ -129,7 +130,7 @@ func verify_zero10{range_check_ptr}(val : UnreducedBigInt10):
         q, r = divmod(v, P)
         assert r == 0, f"verify_zero: Invalid input {ids.val.d0, ids.val.d1, ids.val.d2, ids.val.d3, ids.val.d4}."
 
-        # Since q usually doesn't fit BigInt3, divide it again
+        # Since q usually doesn't fit BigInt6, divide it again
         ids.flag = 1 if q > 0 else 0
         q = q if q > 0 else 0-q
         q1, q2 = divmod(q, P)
@@ -167,13 +168,13 @@ func verify_zero10{range_check_ptr}(val : UnreducedBigInt10):
     assert [range_check_ptr + 3] = carry6 + 2 ** 127
 
     tempvar carry6 = ((2 * flag - 1) * k_n.d6 - val.d6 + carry6) / BASE
-    assert [range_check_ptr + 3] = carry6 + 2 ** 127
+    assert [range_check_ptr + 3] = carry7 + 2 ** 127
 
     tempvar carry6 = ((2 * flag - 1) * k_n.d7 - val.d7 + carry7) / BASE
-    assert [range_check_ptr + 3] = carry6 + 2 ** 127
+    assert [range_check_ptr + 3] = carry8 + 2 ** 127
 
     tempvar carry6 = ((2 * flag - 1) * k_n.d8 - val.d8 + carry8) / BASE
-    assert [range_check_ptr + 3] = carry6 + 2 ** 127
+    assert [range_check_ptr + 3] = carry9 + 2 ** 127
 
     assert (2 * flag - 1) * k_n.d9 - val.d9 + carry9 = 0
 
@@ -183,7 +184,7 @@ func verify_zero10{range_check_ptr}(val : UnreducedBigInt10):
 end
 
 # returns 1 if x ==0 mod alt_bn128 prime
-func is_zero{range_check_ptr}(x : BigInt3) -> (res : felt):
+func is_zero{range_check_ptr}(x : BigInt6) -> (res : felt):
     %{
         from bigint.bigint6_utils import pack
 
@@ -343,39 +344,39 @@ func fq12_is_zero{range_check_ptr}(x : FQ12) -> (res : felt):
     return (res=0)
 end
 
-# Difference of two FQ12, resulting FQ12 BigInt3 limbs can be negative
+# Difference of two FQ12, resulting FQ12 BigInt6 limbs can be negative
 func fq12_diff(x : FQ12, y : FQ12) -> (res : FQ12):
     return (
         res=FQ12(
-        BigInt3(d0=x.e0.d0 - y.e0.d0, d1=x.e0.d1 - y.e0.d1, d2=x.e0.d2 - y.e0.d2, d3=x.e0.d3 - y.e0.d3, d4=x.e0.d4 - y.e0.d4, d5=x.e0.d5 - y.e0.d5),
-        BigInt3(d0=x.e1.d0 - y.e1.d0, d1=x.e1.d1 - y.e1.d1, d2=x.e1.d2 - y.e1.d2, d3=x.e1.d3 - y.e1.d3, d4=x.e1.d4 - y.e1.d4, d5=x.e1.d5 - y.e1.d5),
-        BigInt3(d0=x.e2.d0 - y.e2.d0, d1=x.e2.d1 - y.e2.d1, d2=x.e2.d2 - y.e2.d2, d3=x.e2.d3 - y.e2.d3, d4=x.e2.d4 - y.e2.d4, d5=x.e2.d5 - y.e2.d5),
-        BigInt3(d0=x.e3.d0 - y.e3.d0, d1=x.e3.d1 - y.e3.d1, d2=x.e3.d2 - y.e3.d2, d3=x.e3.d3 - y.e3.d3, d4=x.e3.d4 - y.e3.d4, d5=x.e3.d5 - y.e3.d5),
-        BigInt3(d0=x.e4.d0 - y.e4.d0, d1=x.e4.d1 - y.e4.d1, d2=x.e4.d2 - y.e4.d2, d3=x.e4.d3 - y.e4.d3, d4=x.e4.d4 - y.e4.d4, d5=x.e4.d5 - y.e4.d5),
-        BigInt3(d0=x.e5.d0 - y.e5.d0, d1=x.e5.d1 - y.e5.d1, d2=x.e5.d2 - y.e5.d2, d3=x.e5.d2 - y.e5.d3, d4=x.e5.d4 - y.e5.d4, d5=x.e5.d5 - y.e5.d5),
-        BigInt3(d0=x.e6.d0 - y.e6.d0, d1=x.e6.d1 - y.e6.d1, d2=x.e6.d2 - y.e6.d2, d3=x.e6.d3 - y.e6.d3, d4=x.e6.d4 - y.e6.d4, d5=x.e6.d5 - y.e6.d5),
-        BigInt3(d0=x.e7.d0 - y.e7.d0, d1=x.e7.d1 - y.e7.d1, d2=x.e7.d2 - y.e7.d2, d3=x.e7.d3 - y.e7.d3, d4=x.e7.d4 - y.e7.d4, d5=x.e7.d5 - y.e7.d5),
-        BigInt3(d0=x.e8.d0 - y.e8.d0, d1=x.e8.d1 - y.e8.d1, d2=x.e8.d2 - y.e8.d2, d3=x.e8.d3 - y.e8.d3, d4=x.e8.d4 - y.e8.d4, d5=x.e8.d5 - y.e8.d5),
-        BigInt3(d0=x.e9.d0 - y.e9.d0, d1=x.e9.d1 - y.e9.d1, d2=x.e9.d2 - y.e9.d2, d3=x.e9.d3 - y.e9.d3, d4=x.e9.d4 - y.e9.d4, d5=x.e9.d5 - y.e9.d5),
-        BigInt3(d0=x.eA.d0 - y.eA.d0, d1=x.eA.d1 - y.eA.d1, d2=x.eA.d2 - y.eA.d2, d3=x.eA.d3 - y.eA.d3, d4=x.eA.d4 - y.eA.d4, d5=x.eA.d5 - y.eA.d5),
-        BigInt3(d0=x.eB.d0 - y.eB.d0, d1=x.eB.d1 - y.eB.d1, d2=x.eB.d2 - y.eB.d2, d3=x.eB.d3 - y.eB.d3, d4=x.eB.d4 - y.eB.d4, d5=x.eB.d5 - y.eB.d5)))
+        BigInt6(d0=x.e0.d0 - y.e0.d0, d1=x.e0.d1 - y.e0.d1, d2=x.e0.d2 - y.e0.d2, d3=x.e0.d3 - y.e0.d3, d4=x.e0.d4 - y.e0.d4, d5=x.e0.d5 - y.e0.d5),
+        BigInt6(d0=x.e1.d0 - y.e1.d0, d1=x.e1.d1 - y.e1.d1, d2=x.e1.d2 - y.e1.d2, d3=x.e1.d3 - y.e1.d3, d4=x.e1.d4 - y.e1.d4, d5=x.e1.d5 - y.e1.d5),
+        BigInt6(d0=x.e2.d0 - y.e2.d0, d1=x.e2.d1 - y.e2.d1, d2=x.e2.d2 - y.e2.d2, d3=x.e2.d3 - y.e2.d3, d4=x.e2.d4 - y.e2.d4, d5=x.e2.d5 - y.e2.d5),
+        BigInt6(d0=x.e3.d0 - y.e3.d0, d1=x.e3.d1 - y.e3.d1, d2=x.e3.d2 - y.e3.d2, d3=x.e3.d3 - y.e3.d3, d4=x.e3.d4 - y.e3.d4, d5=x.e3.d5 - y.e3.d5),
+        BigInt6(d0=x.e4.d0 - y.e4.d0, d1=x.e4.d1 - y.e4.d1, d2=x.e4.d2 - y.e4.d2, d3=x.e4.d3 - y.e4.d3, d4=x.e4.d4 - y.e4.d4, d5=x.e4.d5 - y.e4.d5),
+        BigInt6(d0=x.e5.d0 - y.e5.d0, d1=x.e5.d1 - y.e5.d1, d2=x.e5.d2 - y.e5.d2, d3=x.e5.d2 - y.e5.d3, d4=x.e5.d4 - y.e5.d4, d5=x.e5.d5 - y.e5.d5),
+        BigInt6(d0=x.e6.d0 - y.e6.d0, d1=x.e6.d1 - y.e6.d1, d2=x.e6.d2 - y.e6.d2, d3=x.e6.d3 - y.e6.d3, d4=x.e6.d4 - y.e6.d4, d5=x.e6.d5 - y.e6.d5),
+        BigInt6(d0=x.e7.d0 - y.e7.d0, d1=x.e7.d1 - y.e7.d1, d2=x.e7.d2 - y.e7.d2, d3=x.e7.d3 - y.e7.d3, d4=x.e7.d4 - y.e7.d4, d5=x.e7.d5 - y.e7.d5),
+        BigInt6(d0=x.e8.d0 - y.e8.d0, d1=x.e8.d1 - y.e8.d1, d2=x.e8.d2 - y.e8.d2, d3=x.e8.d3 - y.e8.d3, d4=x.e8.d4 - y.e8.d4, d5=x.e8.d5 - y.e8.d5),
+        BigInt6(d0=x.e9.d0 - y.e9.d0, d1=x.e9.d1 - y.e9.d1, d2=x.e9.d2 - y.e9.d2, d3=x.e9.d3 - y.e9.d3, d4=x.e9.d4 - y.e9.d4, d5=x.e9.d5 - y.e9.d5),
+        BigInt6(d0=x.eA.d0 - y.eA.d0, d1=x.eA.d1 - y.eA.d1, d2=x.eA.d2 - y.eA.d2, d3=x.eA.d3 - y.eA.d3, d4=x.eA.d4 - y.eA.d4, d5=x.eA.d5 - y.eA.d5),
+        BigInt6(d0=x.eB.d0 - y.eB.d0, d1=x.eB.d1 - y.eB.d1, d2=x.eB.d2 - y.eB.d2, d3=x.eB.d3 - y.eB.d3, d4=x.eB.d4 - y.eB.d4, d5=x.eB.d5 - y.eB.d5)))
 end
 
 func fq12_sum(x : FQ12, y : FQ12) -> (res : FQ12):
     return (
         res=FQ12(
-        BigInt3(d0=x.e0.d0 + y.e0.d0, d1=x.e0.d1 + y.e0.d1, d2=x.e0.d2 + y.e0.d2, d3=x.e0.d3 + y.e0.d3, d4=x.e0.d4 + y.e0.d4, d5=x.e0.d5 + y.e0.d5),
-        BigInt3(d0=x.e1.d0 + y.e1.d0, d1=x.e1.d1 + y.e1.d1, d2=x.e1.d2 + y.e1.d2, d3=x.e1.d3 + y.e1.d3, d4=x.e1.d4 + y.e1.d4, d5=x.e1.d5 + y.e1.d5),
-        BigInt3(d0=x.e2.d0 + y.e2.d0, d1=x.e2.d1 + y.e2.d1, d2=x.e2.d2 + y.e2.d2, d3=x.e2.d3 + y.e2.d3, d4=x.e2.d4 + y.e2.d4, d5=x.e2.d5 + y.e2.d5),
-        BigInt3(d0=x.e3.d0 + y.e3.d0, d1=x.e3.d1 + y.e3.d1, d2=x.e3.d2 + y.e3.d2, d3=x.e3.d3 + y.e3.d3, d4=x.e3.d4 + y.e3.d4, d5=x.e3.d5 + y.e3.d5),
-        BigInt3(d0=x.e4.d0 + y.e4.d0, d1=x.e4.d1 + y.e4.d1, d2=x.e4.d2 + y.e4.d2, d3=x.e4.d3 + y.e4.d3, d4=x.e4.d4 + y.e4.d4, d5=x.e4.d5 + y.e4.d5),
-        BigInt3(d0=x.e5.d0 + y.e5.d0, d1=x.e5.d1 + y.e5.d1, d2=x.e5.d2 + y.e5.d2, d3=x.e5.d2 + y.e5.d3, d4=x.e5.d4 + y.e5.d4, d5=x.e5.d5 + y.e5.d5),
-        BigInt3(d0=x.e6.d0 + y.e6.d0, d1=x.e6.d1 + y.e6.d1, d2=x.e6.d2 + y.e6.d2, d3=x.e6.d3 + y.e6.d3, d4=x.e6.d4 + y.e6.d4, d5=x.e6.d5 + y.e6.d5),
-        BigInt3(d0=x.e7.d0 + y.e7.d0, d1=x.e7.d1 + y.e7.d1, d2=x.e7.d2 + y.e7.d2, d3=x.e7.d3 + y.e7.d3, d4=x.e7.d4 + y.e7.d4, d5=x.e7.d5 + y.e7.d5),
-        BigInt3(d0=x.e8.d0 + y.e8.d0, d1=x.e8.d1 + y.e8.d1, d2=x.e8.d2 + y.e8.d2, d3=x.e8.d3 + y.e8.d3, d4=x.e8.d4 + y.e8.d4, d5=x.e8.d5 + y.e8.d5),
-        BigInt3(d0=x.e9.d0 + y.e9.d0, d1=x.e9.d1 + y.e9.d1, d2=x.e9.d2 + y.e9.d2, d3=x.e9.d3 + y.e9.d3, d4=x.e9.d4 + y.e9.d4, d5=x.e9.d5 + y.e9.d5),
-        BigInt3(d0=x.eA.d0 + y.eA.d0, d1=x.eA.d1 + y.eA.d1, d2=x.eA.d2 + y.eA.d2, d3=x.eA.d3 + y.eA.d3, d4=x.eA.d4 + y.eA.d4, d5=x.eA.d5 + y.eA.d5),
-        BigInt3(d0=x.eB.d0 + y.eB.d0, d1=x.eB.d1 + y.eB.d1, d2=x.eB.d2 + y.eB.d2, d3=x.eB.d3 + y.eB.d3, d4=x.eB.d4 + y.eB.d4, d5=x.eB.d5 + y.eB.d5)))
+        BigInt6(d0=x.e0.d0 + y.e0.d0, d1=x.e0.d1 + y.e0.d1, d2=x.e0.d2 + y.e0.d2, d3=x.e0.d3 + y.e0.d3, d4=x.e0.d4 + y.e0.d4, d5=x.e0.d5 + y.e0.d5),
+        BigInt6(d0=x.e1.d0 + y.e1.d0, d1=x.e1.d1 + y.e1.d1, d2=x.e1.d2 + y.e1.d2, d3=x.e1.d3 + y.e1.d3, d4=x.e1.d4 + y.e1.d4, d5=x.e1.d5 + y.e1.d5),
+        BigInt6(d0=x.e2.d0 + y.e2.d0, d1=x.e2.d1 + y.e2.d1, d2=x.e2.d2 + y.e2.d2, d3=x.e2.d3 + y.e2.d3, d4=x.e2.d4 + y.e2.d4, d5=x.e2.d5 + y.e2.d5),
+        BigInt6(d0=x.e3.d0 + y.e3.d0, d1=x.e3.d1 + y.e3.d1, d2=x.e3.d2 + y.e3.d2, d3=x.e3.d3 + y.e3.d3, d4=x.e3.d4 + y.e3.d4, d5=x.e3.d5 + y.e3.d5),
+        BigInt6(d0=x.e4.d0 + y.e4.d0, d1=x.e4.d1 + y.e4.d1, d2=x.e4.d2 + y.e4.d2, d3=x.e4.d3 + y.e4.d3, d4=x.e4.d4 + y.e4.d4, d5=x.e4.d5 + y.e4.d5),
+        BigInt6(d0=x.e5.d0 + y.e5.d0, d1=x.e5.d1 + y.e5.d1, d2=x.e5.d2 + y.e5.d2, d3=x.e5.d2 + y.e5.d3, d4=x.e5.d4 + y.e5.d4, d5=x.e5.d5 + y.e5.d5),
+        BigInt6(d0=x.e6.d0 + y.e6.d0, d1=x.e6.d1 + y.e6.d1, d2=x.e6.d2 + y.e6.d2, d3=x.e6.d3 + y.e6.d3, d4=x.e6.d4 + y.e6.d4, d5=x.e6.d5 + y.e6.d5),
+        BigInt6(d0=x.e7.d0 + y.e7.d0, d1=x.e7.d1 + y.e7.d1, d2=x.e7.d2 + y.e7.d2, d3=x.e7.d3 + y.e7.d3, d4=x.e7.d4 + y.e7.d4, d5=x.e7.d5 + y.e7.d5),
+        BigInt6(d0=x.e8.d0 + y.e8.d0, d1=x.e8.d1 + y.e8.d1, d2=x.e8.d2 + y.e8.d2, d3=x.e8.d3 + y.e8.d3, d4=x.e8.d4 + y.e8.d4, d5=x.e8.d5 + y.e8.d5),
+        BigInt6(d0=x.e9.d0 + y.e9.d0, d1=x.e9.d1 + y.e9.d1, d2=x.e9.d2 + y.e9.d2, d3=x.e9.d3 + y.e9.d3, d4=x.e9.d4 + y.e9.d4, d5=x.e9.d5 + y.e9.d5),
+        BigInt6(d0=x.eA.d0 + y.eA.d0, d1=x.eA.d1 + y.eA.d1, d2=x.eA.d2 + y.eA.d2, d3=x.eA.d3 + y.eA.d3, d4=x.eA.d4 + y.eA.d4, d5=x.eA.d5 + y.eA.d5),
+        BigInt6(d0=x.eB.d0 + y.eB.d0, d1=x.eB.d1 + y.eB.d1, d2=x.eB.d2 + y.eB.d2, d3=x.eB.d3 + y.eB.d3, d4=x.eB.d4 + y.eB.d4, d5=x.eB.d5 + y.eB.d5)))
 end
 
 # TODO deterministic (unreduced FQ12?)

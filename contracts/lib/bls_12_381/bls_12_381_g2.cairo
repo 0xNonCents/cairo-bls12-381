@@ -1,5 +1,10 @@
 from contracts.lib.bigint.bigint6 import BigInt6
-from contracts.lib.bls_12_381.alt_bn128_field import FQ2
+from contracts.lib.bls_12_381.bls_12_381_field import FQ2
+
+struct G2Point:
+    member x : FQ2
+    member y : FQ2
+end
 
 func g2() -> (res : G2Point):
     return (

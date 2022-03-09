@@ -1,7 +1,7 @@
 from contracts.lib.bigint.bigint6 import (
-    BigInt6, UnreducedBigInt6, nondet_BigInt6, UnreducedBigInt10, bigint_mul, solve_for_y)
-from contracts.lib.bls_12_381.alt_bn128_field import is_zero, verify_zero10
-from alt_bn128_def import P0, P1, P2
+    BigInt6, UnreducedBigInt6, nondet_bigint6, UnreducedBigInt10, bigint_mul, solve_for_y)
+from contracts.lib.bls_12_381.bls_12_381_field import is_zero, verify_zero10
+from contracts.lib.bls_12_381.bls_12_381_def import P0, P1, P2
 
 # Represents a point on the elliptic curve.
 # The zero point is represented using pt.x=0, as there is no point on the curve with this x value.
@@ -65,7 +65,7 @@ func compute_slope{range_check_ptr}(pt0 : G1Point, pt1 : G1Point) -> (slope : Bi
         y1 = pack(ids.pt1.y, PRIME)
         value = slope = div_mod(y0 - y1, x0 - x1, P)
     %}
-    let (slope) = nondet_BigInt6()
+    let (slope) = nondet_bigint6()
 
     let x_diff = BigInt5(
         d0=pt0.x.d0 - pt1.x.d0,
@@ -115,10 +115,10 @@ func ec_double{range_check_ptr}(pt : G1Point) -> (res : G1Point):
 
         value = new_x = (pow(slope, 2, P) - 2 * x) % P
     %}
-    let (new_x : BigInt6) = nondet_BigInt6()
+    let (new_x : BigInt6) = nondet_bigint6()
 
     %{ value = new_y = (slope * (x - new_x) - y) % P %}
-    let (new_y : BigInt6) = nondet_BigInt6()
+    let (new_y : BigInt6) = nondet_bigint6()
 
     verify_zero5(
         UnreducedBigInt5(
@@ -187,10 +187,10 @@ func fast_ec_add{range_check_ptr}(pt0 : G1Point, pt1 : G1Point) -> (res : G1Poin
 
         value = new_x = (pow(slope, 2, P) - x0 - x1) % P
     %}
-    let (new_x : BigInt6) = nondet_BigInt6()
+    let (new_x : BigInt6) = nondet_bigint6()
 
     %{ value = new_y = (slope * (x0 - new_x) - y0) % P %}
-    let (new_y : BigInt6) = nondet_BigInt6()
+    let (new_y : BigInt6) = nondet_bigint6()
 
     verify_zero5(
         UnreducedBigInt5(
@@ -328,13 +328,13 @@ end
 func g1_two() -> (res : G1Point):
     return (
         G1Point(
-        BigInt3(d0=0xd3c208c16d87cfd3,
+        BigInt6(d0=0xd3c208c16d87cfd3,
             d1=0xd97816a916871ca8,
             d2=0x9b85045b68181585,
             d3=0x030644e72e131a02,
             d4=0x00,
             d5=0x00),
-        BigInt3(d0=0xff3ebf7a5a18a2c4,
+        BigInt6(d0=0xff3ebf7a5a18a2c4,
             d1=0x68a6a449e3538fc7,
             d2=0xe7845f96b2ae9c0a,
             d3=0x15ed738c0e0a7c92,
@@ -374,13 +374,13 @@ end
 func g1_negtwo() -> (res : G1Point):
     return (
         G1Point(
-        BigInt3(d0=0xd3c208c16d87cfd3,
+        BigInt6(d0=0xd3c208c16d87cfd3,
             d1=0xd97816a916871ca8,
             d2=0x9b85045b68181585,
             d3=0x030644e72e131a02,
             d4=0x00,
             d5=0x00,),
-        BigInt3(d0=0x3ce1cc9c7e645a83,
+        BigInt6(d0=0x3ce1cc9c7e645a83,
             d1=0x2edac647851e3ac5,
             d2=0xd0cbe61fced2bc53,
             d3=0x1a76dae6d3272396,
@@ -391,13 +391,13 @@ end
 func g1_negthree() -> (res : G1Point):
     return (
         G1Point(
-        BigInt3(d0=0xf2d355961915abf0,
+        BigInt6(d0=0xf2d355961915abf0,
             d1=0x9315d84715b8e679,
             d2=0xf40232bcb1b6bd15,
             d3=0x0769bf9ac56bea3f,
             d4=0x00,
             d5=0x00),
-        BigInt3(d0=0x6e2e8cd8fe7edae6,
+        BigInt6(d0=0x6e2e8cd8fe7edae6,
             d1=0x65e306dd5cd56f35,
             d2=0x63006a39f478f3e8,
             d3=0x05acb4b400e90c00,

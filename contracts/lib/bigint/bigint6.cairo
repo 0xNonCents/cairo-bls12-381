@@ -109,7 +109,7 @@ end
 # each limb is in the range [0, BASE).
 #
 # Hint arguments: value.
-func nondet_BigInt6{range_check_ptr}() -> (res : BigInt6):
+func nondet_bigint6{range_check_ptr}() -> (res : BigInt6):
     # The result should be at the end of the stack after the function returns.
     let res : BigInt6 = [cast(ap + 5, BigInt6*)]
     %{
