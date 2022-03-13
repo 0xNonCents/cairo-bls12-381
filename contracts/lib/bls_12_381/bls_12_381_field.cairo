@@ -136,11 +136,7 @@ func verify_zero10{range_check_ptr}(val : UnreducedBigInt10):
 
         v = pack10(ids.val, PRIME)
 
-        print(v)
-        print(P)
         q, r = divmod(v, P)
-        print(q)
-        [print(r)]
         assert r == 0, f"verify_zero: Invalid input {ids.val.d0, ids.val.d1, ids.val.d2, ids.val.d3, ids.val.d4}."
 
         # Since q usually doesn't fit BigInt6, divide it again
@@ -392,7 +388,6 @@ func fq12_mul{range_check_ptr}(a : FQ12, b : FQ12) -> (res : FQ12):
 
     # TODO CHECKS
 
-    %{ print(res) %}
     return (res=res)
 end
 
