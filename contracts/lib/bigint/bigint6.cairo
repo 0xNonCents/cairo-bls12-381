@@ -98,8 +98,18 @@ func bigint_mul(x : BigInt6, y : BigInt6) -> (res : UnreducedBigInt10):
         d7=x.d2 * y.d5 + x.d5 * y.d2 + x.d3 * y.d4 + x.d3 * y.d4,
         d8=x.d3 * y.d5 + x.d5 * y.d3 + x.d4 * y.d4,
         d9=x.d5 * y.d4 + x.d4 * y.d5,
-        d10=x.d5 * y.d5,
+        # d10=x.d5 * y.d5,
         ))
+end
+
+func assert_bigint_is_equal(x : BigInt6, y : BigInt6):
+    assert x.d0 = y.d0
+    assert x.d1 = y.d1
+    assert x.d2 = y.d2
+    assert x.d3 = y.d3
+    assert x.d4 = y.d4
+    assert x.d5 = y.d5
+    return ()
 end
 
 # Returns a BigInt6 instance whose value is controlled by a prover hint.
@@ -111,14 +121,19 @@ end
 # Hint arguments: value.
 func nondet_bigint6{range_check_ptr}() -> (res : BigInt6):
     # The result should be at the end of the stack after the function returns.
-    let res : BigInt6 = [cast(ap + 5, BigInt6*)]
+    let res : BigInt6 = [cast(ap + 8, BigInt6*)]
     %{
-        from starkware.cairo.common.cairo_secp.secp_utils import split
+        import sys, os
+        cwd = os.getcwd()
+        sys.path.append(cwd)
+        from contracts.lib.bigint.bigint6_utils import split
+
         segments.write_arg(ids.res.address_, split(value))
     %}
     # The maximal possible sum of the limbs, assuming each of them is in the range [0, BASE).
-    const MAX_SUM = 5 * (BASE - 1)
-    assert [range_check_ptr] = MAX_SUM - (res.d0 + res.d1 + res.d2)
+    const MAX_SUM = 6 * (BASE - 1)
+
+    assert [range_check_ptr] = MAX_SUM - (res.d0 + res.d1 + res.d2 + res.d3 + res.d4 + res.d5)
 
     # Prepare the result at the end of the stack.
     tempvar range_check_ptr = range_check_ptr + 7
@@ -128,6 +143,7 @@ func nondet_bigint6{range_check_ptr}() -> (res : BigInt6):
     [range_check_ptr - 3] = res.d3; ap++
     [range_check_ptr - 2] = res.d4; ap++
     [range_check_ptr - 1] = res.d5; ap++
+
     static_assert &res + BigInt6.SIZE == ap
     return (res=res)
 end

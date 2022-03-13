@@ -2,7 +2,8 @@ from starkware.cairo.common.bitwise import bitwise_and
 from starkware.cairo.common.cairo_builtins import BitwiseBuiltin
 
 from contracts.lib.bigint.bigint6 import (
-    BASE, BigInt6, UnreducedBigInt6, UnreducedBigInt10, nondet_bigint6, bigint_mul)
+    BASE, BigInt6, UnreducedBigInt6, UnreducedBigInt10, nondet_bigint6, bigint_mul,
+    assert_bigint_is_equal)
 from contracts.lib.bls_12_381.bls_12_381_def import P0, P1, P2, P3, P4, P5
 
 # FIELD STRUCTURES
@@ -78,7 +79,10 @@ func verify_zero6{range_check_ptr}(val : BigInt6):
     local flag
     local q
     %{
-        from bigint.bigint6_utils import pack
+        import sys, os
+        cwd = os.getcwd()
+        sys.path.append(cwd)
+        from contracts.lib.bigint.bigint6_utils import pack
 
         v = pack(ids.val, PRIME) 
 
@@ -121,13 +125,22 @@ func verify_zero10{range_check_ptr}(val : UnreducedBigInt10):
     local flag
     local q1
     %{
-        from bigint.bigint6_utils import pack
+        import sys, os
+        cwd = os.getcwd()
+        sys.path.append(cwd)
+        from contracts.lib.bigint.bigint6_utils import pack10
+
 
         # P = prime base otherwise known as q
         P = 0x1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffaaab
-        v = pack(ids.val, PRIME)
 
+        v = pack10(ids.val, PRIME)
+
+        print(v)
+        print(P)
         q, r = divmod(v, P)
+        print(q)
+        [print(r)]
         assert r == 0, f"verify_zero: Invalid input {ids.val.d0, ids.val.d1, ids.val.d2, ids.val.d3, ids.val.d4}."
 
         # Since q usually doesn't fit BigInt6, divide it again
@@ -167,13 +180,13 @@ func verify_zero10{range_check_ptr}(val : UnreducedBigInt10):
     tempvar carry6 = ((2 * flag - 1) * k_n.d5 - val.d5 + carry5) / BASE
     assert [range_check_ptr + 3] = carry6 + 2 ** 127
 
-    tempvar carry6 = ((2 * flag - 1) * k_n.d6 - val.d6 + carry6) / BASE
+    tempvar carry7 = ((2 * flag - 1) * k_n.d6 - val.d6 + carry6) / BASE
+    assert [range_check_ptr + 3] = carry6 + 2 ** 127
+
+    tempvar carry8 = ((2 * flag - 1) * k_n.d7 - val.d7 + carry7) / BASE
     assert [range_check_ptr + 3] = carry7 + 2 ** 127
 
-    tempvar carry6 = ((2 * flag - 1) * k_n.d7 - val.d7 + carry7) / BASE
-    assert [range_check_ptr + 3] = carry8 + 2 ** 127
-
-    tempvar carry6 = ((2 * flag - 1) * k_n.d8 - val.d8 + carry8) / BASE
+    tempvar carry9 = ((2 * flag - 1) * k_n.d8 - val.d8 + carry8) / BASE
     assert [range_check_ptr + 3] = carry9 + 2 ** 127
 
     assert (2 * flag - 1) * k_n.d9 - val.d9 + carry9 = 0
@@ -186,7 +199,10 @@ end
 # returns 1 if x ==0 mod alt_bn128 prime
 func is_zero{range_check_ptr}(x : BigInt6) -> (res : felt):
     %{
-        from bigint.bigint6_utils import pack
+        import sys, os
+        cwd = os.getcwd()
+        sys.path.append(cwd)
+        from contracts.lib.bigint.bigint6_utils import pack
 
         # P = prime base otherwise known as q
         P = 0x1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffaaab
@@ -198,27 +214,6 @@ func is_zero{range_check_ptr}(x : BigInt6) -> (res : felt):
         return (res=1)
     end
 
-    %{
-        from starkware.python.math_utils import div_mod
-        value = x_inv = div_mod(1, x, P)
-    %}
-    let (x_inv) = nondet_bigint6()
-    let (x_x_inv) = bigint_mul(x, x_inv)
-
-    # Check that x * x_inv = 1 to verify that x != 0.
-    verify_zero10(
-        UnreducedBigInt10(
-        d0=x_x_inv.d0 - 1,
-        d1=x_x_inv.d1,
-        d2=x_x_inv.d2,
-        d3=x_x_inv.d3,
-        d4=x_x_inv.d4,
-        d5=x_x_inv.d5,
-        d6=x_x_inv.d6,
-        d7=x_x_inv.d7,
-        d8=x_x_inv.d8,
-        d9=x_x_inv.d9
-        ))
     return (res=0)
 end
 
@@ -319,7 +314,7 @@ func fq12_is_zero{range_check_ptr}(x : FQ12) -> (res : felt):
         sys.path.append(cwd)
 
         from utils.bn128_field import FQ, FQ12
-        from utils.bn128_utils import parse_fq12
+        from utils.bls_12_381_utils import parse_fq12
 
         val = list(map(FQ, parse_fq12(ids.x)))
 
@@ -386,14 +381,18 @@ func fq12_mul{range_check_ptr}(a : FQ12, b : FQ12) -> (res : FQ12):
         cwd = os.getcwd()
         sys.path.append(cwd)
         from utils.bn128_field import FQ, FQ12
-        from utils.bn128_utils import parse_fq12, print_g12
+        from utils.bls_12_381_utils import parse_fq12, print_g12
         a = FQ12(list(map(FQ, parse_fq12(ids.a))))
         b = FQ12(list(map(FQ, parse_fq12(ids.b))))
         value = res = list(map(lambda x: x.n, (a*b).coeffs))
         # print("a*b =", value)
     %}
+
     let (res) = nondet_fq12()
+
     # TODO CHECKS
+
+    %{ print(res) %}
     return (res=res)
 end
 
@@ -419,12 +418,12 @@ end
 
 func fq12_pow_3{range_check_ptr}(x : FQ12, n : BigInt6) -> (pow2 : FQ12, res : FQ12):
     alloc_locals
-    let (pow2_0 : FQ12, local res0 : FQ12) = fq12_pow_inner(x, n.d0, 64)
-    let (pow2_1 : FQ12, local res1 : FQ12) = fq12_pow_inner(pow2_0, n.d1, 64)
-    let (pow2_2 : FQ12, local res2 : FQ12) = fq12_pow_inner(pow2_1, n.d2, 64)
-    let (pow2_3 : FQ12, local res3 : FQ12) = fq12_pow_inner(pow2_2, n.d3, 64)
-    let (pow2_4 : FQ12, local res4 : FQ12) = fq12_pow_inner(pow2_3, n.d4, 64)
-    let (pow2_5 : FQ12, local res5 : FQ12) = fq12_pow_inner(pow2_4, n.d5, 64)
+    let (pow2_0 : FQ12, local res0 : FQ12) = fq12_pow_inner(x, n.d0, 128)
+    let (pow2_1 : FQ12, local res1 : FQ12) = fq12_pow_inner(pow2_0, n.d1, 128)
+    let (pow2_2 : FQ12, local res2 : FQ12) = fq12_pow_inner(pow2_1, n.d2, 128)
+    let (pow2_3 : FQ12, local res3 : FQ12) = fq12_pow_inner(pow2_2, n.d3, 128)
+    let (pow2_4 : FQ12, local res4 : FQ12) = fq12_pow_inner(pow2_3, n.d4, 128)
+    let (pow2_5 : FQ12, local res5 : FQ12) = fq12_pow_inner(pow2_4, n.d5, 128)
 
     let (mul_res_0 : FQ12) = fq12_mul(res0, res1)
     let (mul_res_1 : FQ12) = fq12_mul(mul_res_0, res2)
@@ -469,9 +468,12 @@ end
 # Hint argument: value
 # a 12 element list of field elements
 func nondet_fq12{range_check_ptr}() -> (res : FQ12):
-    let res : FQ12 = [cast(ap + 38, FQ12*)]
+    let res : FQ12 = [cast(ap + 74, FQ12*)]
     %{
-        from starkware.cairo.common.cairo_secp.secp_utils import split
+        import sys, os
+        cwd = os.getcwd()
+        sys.path.append(cwd)
+        from contracts.lib.bigint.bigint6_utils import split
 
         r = ids.res
         var_list = [r.e0, r.e1, r.e2, r.e3, r.e4, r.e5, 
@@ -480,52 +482,120 @@ func nondet_fq12{range_check_ptr}() -> (res : FQ12):
         for (var, val) in zip(var_list, value):
             segments.write_arg(var.address_, split(val))
     %}
-    const MAX_SUM = 12 * 3 * (BASE - 1)
+    const MAX_SUM = 12 * 6 * (BASE - 1)
     # TODO RANGE CHECKS? (WHY THE ASSERT LIKE THS BTW?)
-    assert [range_check_ptr] = MAX_SUM - (res.e0.d0 + res.e0.d1 + res.e0.d2 + res.e1.d0 + res.e1.d1 + res.e1.d2 +
-        res.e2.d0 + res.e2.d1 + res.e2.d2 + res.e3.d0 + res.e3.d1 + res.e3.d2 +
-        res.e4.d0 + res.e4.d1 + res.e4.d2 + res.e5.d0 + res.e5.d1 + res.e5.d2 +
-        res.e6.d0 + res.e6.d1 + res.e6.d2 + res.e7.d0 + res.e7.d1 + res.e7.d2 +
-        res.e8.d0 + res.e8.d1 + res.e8.d2 + res.e9.d0 + res.e9.d1 + res.e9.d2 +
-        res.eA.d0 + res.eA.d1 + res.eA.d2 + res.eB.d0 + res.eB.d1 + res.eB.d2)
 
-    tempvar range_check_ptr = range_check_ptr + 37
+    assert [range_check_ptr] = MAX_SUM - (
+        res.e0.d0 + res.e0.d1 + res.e0.d2 + res.e0.d3 + res.e0.d4 + res.e0.d5 +
+        res.e1.d0 + res.e1.d1 + res.e1.d2 + res.e1.d3 + res.e1.d4 + res.e1.d5 +
+        res.e2.d0 + res.e2.d1 + res.e2.d2 + res.e2.d3 + res.e2.d4 + res.e2.d5 +
+        res.e3.d0 + res.e3.d1 + res.e3.d2 + res.e3.d3 + res.e3.d4 + res.e3.d5 +
+        res.e4.d0 + res.e4.d1 + res.e4.d2 + res.e4.d3 + res.e4.d4 + res.e4.d5 +
+        res.e5.d0 + res.e5.d1 + res.e5.d2 + res.e5.d3 + res.e5.d4 + res.e5.d5 +
+        res.e6.d0 + res.e6.d1 + res.e6.d2 + res.e6.d3 + res.e6.d4 + res.e6.d5 +
+        res.e7.d0 + res.e7.d1 + res.e7.d2 + res.e7.d3 + res.e7.d4 + res.e7.d5 +
+        res.e8.d0 + res.e8.d1 + res.e8.d2 + res.e8.d3 + res.e8.d4 + res.e8.d5 +
+        res.e9.d0 + res.e9.d1 + res.e9.d2 + res.e9.d3 + res.e9.d4 + res.e9.d5 +
+        res.eA.d0 + res.eA.d1 + res.eA.d2 + res.eA.d3 + res.eA.d4 + res.eA.d5 +
+        res.eB.d0 + res.eB.d1 + res.eB.d2 + res.eB.d3 + res.eB.d4 + res.eB.d5)
+
+    tempvar range_check_ptr = range_check_ptr + 73
+
     [range_check_ptr - 1] = res.e0.d0; ap++
     [range_check_ptr - 2] = res.e0.d1; ap++
     [range_check_ptr - 3] = res.e0.d2; ap++
-    [range_check_ptr - 4] = res.e1.d0; ap++
-    [range_check_ptr - 5] = res.e1.d1; ap++
-    [range_check_ptr - 6] = res.e1.d2; ap++
-    [range_check_ptr - 7] = res.e2.d0; ap++
-    [range_check_ptr - 8] = res.e2.d1; ap++
-    [range_check_ptr - 9] = res.e2.d2; ap++
-    [range_check_ptr - 10] = res.e3.d0; ap++
-    [range_check_ptr - 11] = res.e3.d1; ap++
-    [range_check_ptr - 12] = res.e3.d2; ap++
-    [range_check_ptr - 13] = res.e4.d0; ap++
-    [range_check_ptr - 14] = res.e4.d1; ap++
-    [range_check_ptr - 15] = res.e4.d2; ap++
-    [range_check_ptr - 16] = res.e5.d0; ap++
-    [range_check_ptr - 17] = res.e5.d1; ap++
-    [range_check_ptr - 18] = res.e5.d2; ap++
-    [range_check_ptr - 19] = res.e6.d0; ap++
-    [range_check_ptr - 20] = res.e6.d1; ap++
-    [range_check_ptr - 21] = res.e6.d2; ap++
-    [range_check_ptr - 22] = res.e7.d0; ap++
-    [range_check_ptr - 23] = res.e7.d1; ap++
-    [range_check_ptr - 24] = res.e7.d2; ap++
-    [range_check_ptr - 25] = res.e8.d0; ap++
-    [range_check_ptr - 26] = res.e8.d1; ap++
-    [range_check_ptr - 27] = res.e8.d2; ap++
-    [range_check_ptr - 28] = res.e9.d0; ap++
-    [range_check_ptr - 29] = res.e9.d1; ap++
-    [range_check_ptr - 30] = res.e9.d2; ap++
-    [range_check_ptr - 31] = res.eA.d0; ap++
-    [range_check_ptr - 32] = res.eA.d1; ap++
-    [range_check_ptr - 33] = res.eA.d2; ap++
-    [range_check_ptr - 34] = res.eB.d0; ap++
-    [range_check_ptr - 35] = res.eB.d1; ap++
-    [range_check_ptr - 36] = res.eB.d2; ap++
-    static_assert &res + FQ12.SIZE == ap
+    [range_check_ptr - 4] = res.e0.d3; ap++
+    [range_check_ptr - 5] = res.e0.d4; ap++
+    [range_check_ptr - 6] = res.e0.d5; ap++
+
+    [range_check_ptr - 7] = res.e1.d0; ap++
+    [range_check_ptr - 8] = res.e1.d1; ap++
+    [range_check_ptr - 9] = res.e1.d2; ap++
+    [range_check_ptr - 10] = res.e1.d3; ap++
+    [range_check_ptr - 11] = res.e1.d4; ap++
+    [range_check_ptr - 12] = res.e1.d5; ap++
+
+    [range_check_ptr - 13] = res.e2.d0; ap++
+    [range_check_ptr - 14] = res.e2.d1; ap++
+    [range_check_ptr - 15] = res.e2.d2; ap++
+    [range_check_ptr - 16] = res.e2.d3; ap++
+    [range_check_ptr - 17] = res.e2.d4; ap++
+    [range_check_ptr - 18] = res.e2.d5; ap++
+
+    [range_check_ptr - 19] = res.e3.d0; ap++
+    [range_check_ptr - 20] = res.e3.d1; ap++
+    [range_check_ptr - 21] = res.e3.d2; ap++
+    [range_check_ptr - 22] = res.e3.d3; ap++
+    [range_check_ptr - 23] = res.e3.d4; ap++
+    [range_check_ptr - 24] = res.e3.d5; ap++
+
+    [range_check_ptr - 25] = res.e4.d0; ap++
+    [range_check_ptr - 26] = res.e4.d1; ap++
+    [range_check_ptr - 27] = res.e4.d2; ap++
+    [range_check_ptr - 28] = res.e4.d3; ap++
+    [range_check_ptr - 29] = res.e4.d4; ap++
+    [range_check_ptr - 30] = res.e4.d5; ap++
+
+    [range_check_ptr - 31] = res.e5.d0; ap++
+    [range_check_ptr - 32] = res.e5.d1; ap++
+    [range_check_ptr - 33] = res.e5.d2; ap++
+    [range_check_ptr - 34] = res.e5.d3; ap++
+    [range_check_ptr - 35] = res.e5.d4; ap++
+    [range_check_ptr - 36] = res.e5.d5; ap++
+
+    [range_check_ptr - 37] = res.e6.d0; ap++
+    [range_check_ptr - 38] = res.e6.d1; ap++
+    [range_check_ptr - 39] = res.e6.d2; ap++
+    [range_check_ptr - 40] = res.e6.d3; ap++
+    [range_check_ptr - 41] = res.e6.d4; ap++
+    [range_check_ptr - 42] = res.e6.d5; ap++
+
+    [range_check_ptr - 43] = res.e7.d0; ap++
+    [range_check_ptr - 44] = res.e7.d1; ap++
+    [range_check_ptr - 45] = res.e7.d2; ap++
+    [range_check_ptr - 46] = res.e7.d3; ap++
+    [range_check_ptr - 47] = res.e7.d4; ap++
+    [range_check_ptr - 48] = res.e7.d5; ap++
+
+    [range_check_ptr - 49] = res.e8.d0; ap++
+    [range_check_ptr - 50] = res.e8.d1; ap++
+    [range_check_ptr - 51] = res.e8.d2; ap++
+    [range_check_ptr - 52] = res.e8.d3; ap++
+    [range_check_ptr - 53] = res.e8.d4; ap++
+    [range_check_ptr - 54] = res.e8.d5; ap++
+
+    [range_check_ptr - 55] = res.e9.d0; ap++
+    [range_check_ptr - 56] = res.e9.d1; ap++
+    [range_check_ptr - 57] = res.e9.d2; ap++
+    [range_check_ptr - 58] = res.e9.d3; ap++
+    [range_check_ptr - 59] = res.e9.d4; ap++
+    [range_check_ptr - 60] = res.e9.d5; ap++
+
+    [range_check_ptr - 61] = res.eA.d0; ap++
+    [range_check_ptr - 62] = res.eA.d1; ap++
+    [range_check_ptr - 63] = res.eA.d2; ap++
+    [range_check_ptr - 64] = res.eA.d3; ap++
+    [range_check_ptr - 65] = res.eA.d4; ap++
+    [range_check_ptr - 66] = res.eA.d5; ap++
+
+    [range_check_ptr - 67] = res.eB.d0; ap++
+    [range_check_ptr - 68] = res.eB.d1; ap++
+    [range_check_ptr - 69] = res.eB.d2; ap++
+    [range_check_ptr - 70] = res.eB.d3; ap++
+    [range_check_ptr - 71] = res.eB.d4; ap++
+    [range_check_ptr - 72] = res.eB.d5; ap++
+
+    # static_assert &res + FQ12.SIZE == ap
     return (res=res)
+end
+
+func assert_fq12_is_equal(a : FQ12, b : FQ12):
+    assert_bigint_is_equal(a.e0, b.e0)
+    assert_bigint_is_equal(a.e1, b.e1)
+    assert_bigint_is_equal(a.e2, b.e2)
+    assert_bigint_is_equal(a.e3, b.e3)
+    assert_bigint_is_equal(a.e4, b.e4)
+    assert_bigint_is_equal(a.e5, b.e5)
+
+    return ()
 end

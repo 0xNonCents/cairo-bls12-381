@@ -16,7 +16,7 @@ func fq12_mul{range_check_ptr}(a : FQ12, b : FQ12) -> (res : FQ12):
         cwd = os.getcwd()
         sys.path.append(cwd)
         from utils.bn128_field import FQ, FQ12
-        from utils.bn128_utils import parse_fq12, print_g12
+        from utils.bls_12_381_utils import parse_fq12, print_g12
         a = FQ12(list(map(FQ, parse_fq12(ids.a))))
         b = FQ12(list(map(FQ, parse_fq12(ids.b))))
         value = res = list(map(lambda x: x.n, (a*b).coeffs))
@@ -30,7 +30,7 @@ end
 func gt_doubling_slope{range_check_ptr}(pt : GTPoint) -> (slope : FQ12):
     %{
         from utils.bn128_field import FQ, FQ12
-        from utils.bn128_utils import parse_fq12
+        from utils.bls_12_381_utils import parse_fq12
 
         # Compute the slope.
         x = FQ12(list(map(FQ, parse_fq12(ids.pt.x))))
@@ -47,7 +47,7 @@ end
 func gt_slope{range_check_ptr}(pt0 : GTPoint, pt1 : GTPoint) -> (slope : FQ12):
     %{
         from utils.bn128_field import FQ, FQ12
-        from utils.bn128_utils import parse_fq12
+        from utils.bls_12_381_utils import parse_fq12
 
         # Compute the slope.
         x0 = FQ12(list(map(FQ, parse_fq12(ids.pt0.x))))
@@ -75,7 +75,7 @@ func gt_double{range_check_ptr}(pt : GTPoint) -> (res : GTPoint):
     let (slope_sqr : FQ12) = fq12_mul(slope, slope)
     %{
         from utils.bn128_field import FQ, FQ12
-        from utils.bn128_utils import parse_fq12
+        from utils.bls_12_381_utils import parse_fq12
 
         # Compute the slope.
         x = FQ12(list(map(FQ, parse_fq12(ids.pt.x))))
@@ -131,7 +131,7 @@ func fast_gt_add{range_check_ptr}(pt0 : GTPoint, pt1 : GTPoint) -> (res : GTPoin
 
     %{
         from utils.bn128_field import FQ, FQ12
-        from utils.bn128_utils import parse_fq12
+        from utils.bls_12_381_utils import parse_fq12
 
         # Compute the slope.
         x0 = FQ12(list(map(FQ, parse_fq12(ids.pt0.x))))

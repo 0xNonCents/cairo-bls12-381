@@ -27,3 +27,13 @@ def pack(z, prime):
     """
     limbs = z.d0, z.d1, z.d2, z.d3, z.d4, z.d5
     return sum(as_int(limb, prime) * 2 ** (64 * i) for i, limb in enumerate(limbs))
+
+def pack10(z, prime):
+    """
+    Takes a BigInt6 struct which represents a triple of limbs (d0, d1, d2) of field elements are
+    reconstruct the 384-bit integer (see split()).
+    Note that the limbs do not have to be in the range [0, BASE).
+    prime should be the Cairo field, and it is used to handle negative values of the limbs.
+    """
+    limbs = z.d0, z.d1, z.d2, z.d3, z.d4, z.d5, z.d6, z.d7, z.d8, z.d9
+    return sum(as_int(limb, prime) * 2 ** (64 * i) for i, limb in enumerate(limbs))

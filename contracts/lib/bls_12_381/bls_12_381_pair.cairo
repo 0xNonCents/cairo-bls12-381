@@ -1,7 +1,7 @@
-from contracts.lib.bigint.bigint6 import BigInt6, nondet_bigint6, bigint_mul, UnreducedBigInt5
-from contracts.lib.bls_12_381.bls_12_381_def import P0, P1, P2
+from contracts.lib.bigint.bigint6 import BigInt6, nondet_bigint6, bigint_mul, UnreducedBigInt10
+from contracts.lib.bls_12_381.bls_12_381_def import P0, P1, P2, P3, P4, P5
 from contracts.lib.bls_12_381.bls_12_381_field import (
-    is_zero, FQ12, verify_zero5, fq12_is_zero, nondet_fq12, fq12_one, fq12_diff, fq12_pow_12,
+    is_zero, FQ12, verify_zero10, fq12_is_zero, nondet_fq12, fq12_one, fq12_diff, fq12_pow_12,
     fq12_pow_3, fq12_zero)
 from contracts.lib.bls_12_381.bls_12_381_g1 import G1Point, compute_doubling_slope, compute_slope
 from contracts.lib.bls_12_381.bls_12_381_g2 import G2Point
@@ -93,7 +93,7 @@ func gt_linehelp{range_check_ptr}(pt0 : GTPoint, pt1 : GTPoint, t : GTPoint, slo
         sys.path.append(cwd)
 
         from utils.bn128_field import FQ, FQ12
-        from utils.bn128_utils import parse_fq12
+        from utils.bls_12_381_utils import parse_fq12
 
         x1 = FQ12(list(map(FQ, parse_fq12(ids.pt1.x))))
         y1 = FQ12(list(map(FQ, parse_fq12(ids.pt1.y))))
@@ -170,8 +170,9 @@ func miller_loop{range_check_ptr}(Q : GTPoint, P : GTPoint, R : GTPoint, n : fel
     # inner loop
     let (bit) = get_loop_count_bits(n - 1)
 
-    let (local f_sqr : FQ12) = fq12_mul(f, f)
     let (local lfRRP : FQ12) = gt_linefunc(R, R, P)
+    let (local f_sqr : FQ12) = fq12_mul(f, f)
+
     let (local f_sqr_l : FQ12) = fq12_mul(f_sqr, lfRRP)
     let (twoR : GTPoint) = gt_double(R)
     if bit == 0:

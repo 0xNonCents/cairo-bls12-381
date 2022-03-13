@@ -29,10 +29,10 @@ func compute_doubling_slope{range_check_ptr}(pt : G1Point) -> (slope : BigInt6):
     %}
     let (slope : BigInt6) = nondet_bigint6()
 
-    let (x_sqr : UnreducedBigInt5) = bigint_mul(pt.x, pt.x)
-    let (slope_y : UnreducedBigInt5) = bigint_mul(slope, pt.y)
+    let (x_sqr : UnreducedBigInt10) = bigint_mul(pt.x, pt.x)
+    let (slope_y : UnreducedBigInt10) = bigint_mul(slope, pt.y)
 
-    verify_zero5(
+    verify_zero10(
         UnreducedBigInt10(
         d0=3 * x_sqr.d0 - 2 * slope_y.d0,
         d1=3 * x_sqr.d1 - 2 * slope_y.d1,
@@ -52,7 +52,7 @@ end
 # Returns the slope of the line connecting the two given points.
 # The slope is used to compute pt0 + pt1.
 # Assumption: pt0.x != pt1.x (mod field prime).
-func compute_slope{range_check_ptr}(pt0 : G1Point, pt1 : G1Point) -> (slope : BigInt5):
+func compute_slope{range_check_ptr}(pt0 : G1Point, pt1 : G1Point) -> (slope : BigInt6):
     %{
         from starkware.cairo.common.cairo_secp.secp_utils import pack
         from starkware.python.math_utils import div_mod
@@ -67,7 +67,7 @@ func compute_slope{range_check_ptr}(pt0 : G1Point, pt1 : G1Point) -> (slope : Bi
     %}
     let (slope) = nondet_bigint6()
 
-    let x_diff = BigInt5(
+    let x_diff = BigInt6(
         d0=pt0.x.d0 - pt1.x.d0,
         d1=pt0.x.d1 - pt1.x.d1,
         d2=pt0.x.d2 - pt1.x.d2,
@@ -76,8 +76,8 @@ func compute_slope{range_check_ptr}(pt0 : G1Point, pt1 : G1Point) -> (slope : Bi
         d5=pt0.x.d5 - pt1.x.d5)
     let (x_diff_slope : UnreducedBigInt10) = bigint_mul(x_diff, slope)
 
-    verify_zero5(
-        UnreducedBigInt5(
+    verify_zero10(
+        UnreducedBigInt10(
         d0=x_diff_slope.d0 - pt0.y.d0 + pt1.y.d0,
         d1=x_diff_slope.d1 - pt0.y.d1 + pt1.y.d1,
         d2=x_diff_slope.d2 - pt0.y.d2 + pt1.y.d2,
@@ -103,7 +103,7 @@ func ec_double{range_check_ptr}(pt : G1Point) -> (res : G1Point):
     end
 
     let (slope : BigInt6) = compute_doubling_slope(pt)
-    let (slope_sqr : UnreducedBigInt5) = bigint_mul(slope, slope)
+    let (slope_sqr : UnreducedBigInt10) = bigint_mul(slope, slope)
 
     %{
         from starkware.cairo.common.cairo_secp.secp_utils import pack
@@ -120,8 +120,8 @@ func ec_double{range_check_ptr}(pt : G1Point) -> (res : G1Point):
     %{ value = new_y = (slope * (x - new_x) - y) % P %}
     let (new_y : BigInt6) = nondet_bigint6()
 
-    verify_zero5(
-        UnreducedBigInt5(
+    verify_zero10(
+        UnreducedBigInt10(
         d0=slope_sqr.d0 - new_x.d0 - 2 * pt.x.d0,
         d1=slope_sqr.d1 - new_x.d1 - 2 * pt.x.d1,
         d2=slope_sqr.d2 - new_x.d2 - 2 * pt.x.d2,
@@ -133,12 +133,12 @@ func ec_double{range_check_ptr}(pt : G1Point) -> (res : G1Point):
         d8=slope_sqr.d8,
         d9=slope_sqr.d9))
 
-    let (x_diff_slope : UnreducedBigInt5) = bigint_mul(
-        BigInt5(d0=pt.x.d0 - new_x.d0, d1=pt.x.d1 - new_x.d1, d2=pt.x.d2 - new_x.d2, d3=pt.x.d3 - new_x.d3, d4=pt.x.d4 - new_x.d4, d5=pt.x.d5 - new_x.d5),
+    let (x_diff_slope : UnreducedBigInt10) = bigint_mul(
+        BigInt6(d0=pt.x.d0 - new_x.d0, d1=pt.x.d1 - new_x.d1, d2=pt.x.d2 - new_x.d2, d3=pt.x.d3 - new_x.d3, d4=pt.x.d4 - new_x.d4, d5=pt.x.d5 - new_x.d5),
         slope)
 
-    verify_zero5(
-        UnreducedBigInt5(
+    verify_zero10(
+        UnreducedBigInt10(
         d0=x_diff_slope.d0 - pt.y.d0 - new_y.d0,
         d1=x_diff_slope.d1 - pt.y.d1 - new_y.d1,
         d2=x_diff_slope.d2 - pt.y.d2 - new_y.d2,
@@ -174,7 +174,7 @@ func fast_ec_add{range_check_ptr}(pt0 : G1Point, pt1 : G1Point) -> (res : G1Poin
     end
 
     let (slope : BigInt6) = compute_slope(pt0, pt1)
-    let (slope_sqr : UnreducedBigInt5) = bigint_mul(slope, slope)
+    let (slope_sqr : Unreduced10) = bigint_mul(slope, slope)
 
     %{
         from starkware.cairo.common.cairo_secp.secp_utils import pack
@@ -192,25 +192,25 @@ func fast_ec_add{range_check_ptr}(pt0 : G1Point, pt1 : G1Point) -> (res : G1Poin
     %{ value = new_y = (slope * (x0 - new_x) - y0) % P %}
     let (new_y : BigInt6) = nondet_bigint6()
 
-    verify_zero5(
-        UnreducedBigInt5(
-        d0=slope_sqr.d0 - new_x.d0 - pt.x.d0 - pt1.x.d0,
-        d1=slope_sqr.d1 - new_x.d1 - pt.x.d1 - pt1.x.d1,
-        d2=slope_sqr.d2 - new_x.d2 - pt.x.d2 - pt1.x.d2,
-        d3=slope_sqr.d3 - new_x.d3 - pt.x.d3 - pt1.x.d3,
-        d4=slope_sqr.d4 - new_x.d4 - pt.x.d4 - pt1.x.d4,
-        d5=slope_sqr.d5 - new_x.d5 - pt.x.d5 - pt1.x.d5,
+    verify_zero10(
+        UnreducedBigInt10(
+        d0=slope_sqr.d0 - new_x.d0 - pt0.x.d0 - pt1.x.d0,
+        d1=slope_sqr.d1 - new_x.d1 - pt0.x.d1 - pt1.x.d1,
+        d2=slope_sqr.d2 - new_x.d2 - pt0.x.d2 - pt1.x.d2,
+        d3=slope_sqr.d3 - new_x.d3 - pt0.x.d3 - pt1.x.d3,
+        d4=slope_sqr.d4 - new_x.d4 - pt0.x.d4 - pt1.x.d4,
+        d5=slope_sqr.d5 - new_x.d5 - pt0.x.d5 - pt1.x.d5,
         d6=slope_sqr.d6,
         d7=slope_sqr.d7,
         d8=slope_sqr.d8,
         d9=slope_sqr.d9))
 
-    let (x_diff_slope : UnreducedBigInt5) = bigint_mul(
+    let (x_diff_slope : UnreducedBigInt10) = bigint_mul(
         BigInt6(d0=pt0.x.d0 - new_x.d0, d1=pt0.x.d1 - new_x.d1, d2=pt0.x.d2 - new_x.d2, d3=pt0.x.d3 - new_x.d3, d4=pt0.x.d4 - new_x.d4, d5=pt0.x.d5 - new_x.d5),
         slope)
 
-    verify_zero5(
-        UnreducedBigInt5(
+    verify_zero10(
+        UnreducedBigInt10(
         d0=x_diff_slope.d0 - pt0.y.d0 - new_y.d0,
         d1=x_diff_slope.d1 - pt0.y.d1 - new_y.d1,
         d2=x_diff_slope.d2 - pt0.y.d2 - new_y.d2,
@@ -311,18 +311,18 @@ end
 # CONSTANTS
 func g1() -> (res : G1Point):
     return (
-        res=G1Point(BigInt6(d0=0xfb3af00adb22c6bb,
-            d1=0x6c55e83ff97a1aef,
-            d2=0xa14e3a3f171bac58,
-            d3=0xc3688c4f9774b905,
-            d4=0x2695638c4fa9ac0f,
-            d5=0x17f1d3a73197d794),
-        BigInt6(d0=0x0caa232946c5e7e1,
-            d1=0xd03cc744a2888ae4,
-            d2=0xdb18cb2c04b3ed,
-            d3=0xfcf5e095d5d00af6,
-            d4=0xa09e30ed741d8ae4,
-            d5=0x08b3f481e3aaa0f1,)))
+        res=G1Point(BigInt6(d0=0x5cb38790fd530c16,
+            d1=0x7817fc679976fff5,
+            d2=0x154f95c7143ba1c1,
+            d3=0xf0ae6acdf3d0e747,
+            d4=0xedce6ecc21dbf440,
+            d5=0x120177419e0bfb75),
+        BigInt6(d0=0xbaac93d50ce72271,
+            d1=0x8c22631a7918fd8e,
+            d2=0xdd595f13570725ce,
+            d3=0x51ac582950405194,
+            d4=0xe1c8c3fad0059c0,
+            d5=0xbbc3efc5008a26a)))
 end
 
 func g1_two() -> (res : G1Point):
