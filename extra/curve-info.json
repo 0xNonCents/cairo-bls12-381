@@ -1,4 +1,5 @@
 {
+  "source": "https://neuromancer.sk/std/bls/BLS12-381",
   "name": "BLS12-381",
   "desc": "Curve from https://electriccoin.co/blog/new-snark-curve/. As used in ZCash.",
   "form": "Weierstrass",

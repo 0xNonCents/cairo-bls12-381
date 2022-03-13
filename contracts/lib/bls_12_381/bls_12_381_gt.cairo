@@ -1,7 +1,7 @@
 from contracts.lib.bigint.bigint6 import BigInt6, nondet_bigint6, bigint_mul
 from contracts.lib.bls_12_381.bls_12_381_field import (
-    fq_zero, is_zero, FQ12, nondet_fq12, fq12_eq_zero, fq12_sum, fq12_diff, fq12_is_zero, fq12_zero,
-    unreducedFQ12)
+    fq_zero, is_zero, FQ12, nondet_fq12, fq12_eq_zero, fq12_sum, fq12_diff, fq12_is_zero,
+    fq12_zero, unreducedFQ12)
 from contracts.lib.bls_12_381.bls_12_381_g1 import G1Point
 from contracts.lib.bls_12_381.bls_12_381_g2 import g2, G2Point
 
@@ -15,7 +15,7 @@ func fq12_mul{range_check_ptr}(a : FQ12, b : FQ12) -> (res : FQ12):
         import sys, os
         cwd = os.getcwd()
         sys.path.append(cwd)
-        from utils.bn128_field import FQ, FQ12
+        from utils.bls_12_381_field import FQ, FQ12
         from utils.bls_12_381_utils import parse_fq12, print_g12
         a = FQ12(list(map(FQ, parse_fq12(ids.a))))
         b = FQ12(list(map(FQ, parse_fq12(ids.b))))
@@ -29,7 +29,7 @@ end
 
 func gt_doubling_slope{range_check_ptr}(pt : GTPoint) -> (slope : FQ12):
     %{
-        from utils.bn128_field import FQ, FQ12
+        from utils.bls_12_381_field import FQ, FQ12
         from utils.bls_12_381_utils import parse_fq12
 
         # Compute the slope.
@@ -46,7 +46,7 @@ end
 
 func gt_slope{range_check_ptr}(pt0 : GTPoint, pt1 : GTPoint) -> (slope : FQ12):
     %{
-        from utils.bn128_field import FQ, FQ12
+        from utils.bls_12_381_field import FQ, FQ12
         from utils.bls_12_381_utils import parse_fq12
 
         # Compute the slope.
@@ -74,7 +74,7 @@ func gt_double{range_check_ptr}(pt : GTPoint) -> (res : GTPoint):
     let (slope : FQ12) = gt_doubling_slope(pt)
     let (slope_sqr : FQ12) = fq12_mul(slope, slope)
     %{
-        from utils.bn128_field import FQ, FQ12
+        from utils.bls_12_381_field import FQ, FQ12
         from utils.bls_12_381_utils import parse_fq12
 
         # Compute the slope.
@@ -130,7 +130,7 @@ func fast_gt_add{range_check_ptr}(pt0 : GTPoint, pt1 : GTPoint) -> (res : GTPoin
     let (slope_sqr : FQ12) = fq12_mul(slope, slope)
 
     %{
-        from utils.bn128_field import FQ, FQ12
+        from utils.bls_12_381_field import FQ, FQ12
         from utils.bls_12_381_utils import parse_fq12
 
         # Compute the slope.

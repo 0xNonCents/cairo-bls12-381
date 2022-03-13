@@ -8,8 +8,8 @@ from contracts.lib.bls_12_381.bls_12_381_g2 import G2Point
 from contracts.lib.bls_12_381.bls_12_381_gt import (
     GTPoint, gt_slope, gt_doubling_slope, twist, g1_to_gt, fq12_mul, gt_double, gt_add)
 
-const ate_loop_count = 29793968203157093288
-const log_ate_loop_count = 63
+const ate_loop_count = 15132376222941642752
+const log_ate_loop_count = 62
 
 from starkware.cairo.common.registers import get_label_location
 
@@ -22,41 +22,13 @@ func get_loop_count_bits(index : felt) -> (bits : felt):
     dw 0
     dw 0
     dw 0
-    dw 1
-    dw 0
-    dw 1
-    dw 0
-    dw 1
-    dw 1
-    dw 1
-    dw 0
-    dw 1
-    dw 1
-    dw 1
     dw 0
     dw 0
     dw 0
-    dw 1
-    dw 1
-    dw 0
-    dw 1
-    dw 1
-    dw 1
     dw 0
     dw 0
-    dw 1
-    dw 1
-    dw 1
-    dw 1
-    dw 1
-    dw 0
-    dw 1
-    dw 1
     dw 0
     dw 0
-    dw 1
-    dw 1
-    dw 1
     dw 0
     dw 0
     dw 0
@@ -64,24 +36,52 @@ func get_loop_count_bits(index : felt) -> (bits : felt):
     dw 0
     dw 0
     dw 1
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
     dw 1
-    dw 1
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
+    dw 0
     dw 0
     dw 1
     dw 0
     dw 0
     dw 1
-    dw 1
-    dw 1
-    dw 1
     dw 0
     dw 1
-    dw 0
-    dw 1
-    dw 1
-    dw 1
-    dw 0
-    dw 0
     dw 1
 end
 
@@ -92,7 +92,7 @@ func gt_linehelp{range_check_ptr}(pt0 : GTPoint, pt1 : GTPoint, t : GTPoint, slo
         cwd = os.getcwd()
         sys.path.append(cwd)
 
-        from utils.bn128_field import FQ, FQ12
+        from utils.bls_12_381_field import FQ, FQ12
         from utils.bls_12_381_utils import parse_fq12
 
         x1 = FQ12(list(map(FQ, parse_fq12(ids.pt1.x))))

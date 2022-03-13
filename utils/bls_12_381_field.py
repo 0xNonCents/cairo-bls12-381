@@ -6,17 +6,19 @@ try:
     foo = long
 except:
     long = int
-    
-# The prime modulus of the field
-field_modulus = 21888242871839275222246405745257275088696311157297823662689037894645226208583
+
+# The prime modulus of the field derived from https://github.com/ethereum/py_ecc/blob/a1d18addb439d7659a9cbac861bf1518371f0afd/py_ecc/fields/field_properties.py#L23
+field_modulus = 4002409555221667393417789825735904156556882819939007885332058136124031650490837864442687629129015664037894272559787
 # See, it's prime!
 assert pow(2, field_modulus, field_modulus) == 2
 
 # The modulus of the polynomial in this representation of FQ12
-FQ12_modulus_coeffs = [82, 0, 0, 0, 0, 0, -18, 0, 0, 0, 0, 0] # Implied + [1]
+FQ12_modulus_coeffs = [2, 0, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0]  # Implied + [1]
 
 # Extended euclidean algorithm to find modular inverses for
 # integers
+
+
 def inv(a, n):
     if a == 0:
         return 0
@@ -30,6 +32,8 @@ def inv(a, n):
 
 # A class for field elements in FQ. Wrap a number in this class,
 # and it becomes a field element.
+
+
 class FQ():
     def __init__(self, n):
         if isinstance(n, self.__class__):
@@ -110,11 +114,14 @@ class FQ():
         return cls(0)
 
 # Utility methods for polynomial math
+
+
 def deg(p):
     d = len(p) - 1
     while p[d] == 0 and d:
         d -= 1
     return d
+
 
 def poly_rounded_div(a, b):
     dega = deg(a)
@@ -128,8 +135,10 @@ def poly_rounded_div(a, b):
     return o[:deg(o)+1]
 
 # A class for elements in polynomial extension fields
+
+
 class FQP():
-    def __init__(self, coeffs, modulus_coeffs): 
+    def __init__(self, coeffs, modulus_coeffs):
         assert len(coeffs) == len(modulus_coeffs)
         self.coeffs = [FQ(c) for c in coeffs]
         # The coefficients of the modulus, without the leading [1]
@@ -139,11 +148,11 @@ class FQP():
 
     def __add__(self, other):
         assert isinstance(other, self.__class__)
-        return self.__class__([x+y for x,y in zip(self.coeffs, other.coeffs)])
+        return self.__class__([x+y for x, y in zip(self.coeffs, other.coeffs)])
 
     def __sub__(self, other):
         assert isinstance(other, self.__class__)
-        return self.__class__([x-y for x,y in zip(self.coeffs, other.coeffs)])
+        return self.__class__([x-y for x, y in zip(self.coeffs, other.coeffs)])
 
     def __mul__(self, other):
         if isinstance(other, (FQ, int, long)):
@@ -192,7 +201,8 @@ class FQP():
             r += [0] * (self.degree + 1 - len(r))
             nm = [x for x in hm]
             new = [x for x in high]
-            assert len(lm) == len(hm) == len(low) == len(high) == len(nm) == len(new) == self.degree + 1
+            assert len(lm) == len(hm) == len(low) == len(
+                high) == len(nm) == len(new) == self.degree + 1
             for i in range(self.degree + 1):
                 for j in range(self.degree + 1 - i):
                     nm[i+j] -= lm[i] * r[j]
@@ -225,6 +235,8 @@ class FQP():
         return cls([0] * cls.degree)
 
 # The quadratic extension field
+
+
 class FQ2(FQP):
     def __init__(self, coeffs):
         self.coeffs = [FQ(c) for c in coeffs]
@@ -233,6 +245,8 @@ class FQ2(FQP):
         self.__class__.degree = 2
 
 # The 12th-degree extension field
+
+
 class FQ12(FQP):
     def __init__(self, coeffs):
         self.coeffs = [FQ(c) for c in coeffs]
