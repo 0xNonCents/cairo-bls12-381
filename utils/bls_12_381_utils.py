@@ -100,6 +100,3 @@ def cairo_bigint6(x):
         tmp.append(f'd{i}={x}')
     res += ", ".join(tmp) + ")"
     return res
-
-
-cairo_final_exponent()

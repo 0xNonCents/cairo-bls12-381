@@ -311,18 +311,18 @@ end
 # CONSTANTS
 func g1() -> (res : G1Point):
     return (
-        res=G1Point(BigInt6(d0=0x5cb38790fd530c16,
-            d1=0x7817fc679976fff5,
-            d2=0x154f95c7143ba1c1,
-            d3=0xf0ae6acdf3d0e747,
-            d4=0xedce6ecc21dbf440,
-            d5=0x120177419e0bfb75),
-        BigInt6(d0=0xbaac93d50ce72271,
-            d1=0x8c22631a7918fd8e,
-            d2=0xdd595f13570725ce,
-            d3=0x51ac582950405194,
-            d4=0xe1c8c3fad0059c0,
-            d5=0xbbc3efc5008a26a)))
+        res=G1Point(BigInt6(0xfb3af00adb22c6bb,
+            0x6c55e83ff97a1aef,
+            0xa14e3a3f171bac58,
+            0xc3688c4f9774b905,
+            0x2695638c4fa9ac0f,
+            0x17f1d3a73197d794),
+        BigInt6(0x0caa232946c5e7e1,
+            0xd03cc744a2888ae4,
+            0xdb18cb2c04b3ed,
+            0xfcf5e095d5d00af6,
+            0xa09e30ed741d8ae4,
+            0x08b3f481e3aaa0f1)))
 end
 
 func g1_two() -> (res : G1Point):
