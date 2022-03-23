@@ -311,13 +311,13 @@ end
 # CONSTANTS
 func g1() -> (res : G1Point):
     return (
-        res=G1Point(BigInt6(0xfb3af00adb22c6bb,
+        res=G1Point(x=BigInt6(0xfb3af00adb22c6bb,
             0x6c55e83ff97a1aef,
             0xa14e3a3f171bac58,
             0xc3688c4f9774b905,
             0x2695638c4fa9ac0f,
             0x17f1d3a73197d794),
-        BigInt6(0x0caa232946c5e7e1,
+        y=BigInt6(0x0caa232946c5e7e1,
             0xd03cc744a2888ae4,
             0xdb18cb2c04b3ed,
             0xfcf5e095d5d00af6,
@@ -362,13 +362,18 @@ end
 func g1_negone() -> (res : G1Point):
     return (
         G1Point(
-        BigInt6(0x1, 0x0, 0x0, 0x0, 0x0, 0x0),
-        BigInt6(d0=0x3c208c16d87cfd45,
-            d1=0x97816a916871ca8d,
-            d2=0xb85045b68181585d,
-            d3=0x30644e72e131a029,
-            d4=0x00,
-            d5=0x00)))
+        BigInt6(d0=0xfb3af00adb22c6bb,
+            d1=0x6c55e83ff97a1aef,
+            d2=0xa14e3a3f171bac58,
+            d3=0xc3688c4f9774b905,
+            d4=0x2695638c4fa9ac0f,
+            d5=0x17f1d3a73197d794),
+        BigInt6(d0=0xad54dcd6b939c2ca,
+            d1=0x4e6f38ba0ecb751b,
+            d2=0x6655b9d5caac4236,
+            d3=0x67816aef1db507c9,
+            d4=0xaa7d76c8cf2e21f2,
+            d5=0x114d1d6855d545a8,)))
 end
 
 func g1_negtwo() -> (res : G1Point):

@@ -3,13 +3,12 @@
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.alloc import alloc
 from contracts.lib.sha256.sha256 import sha256
-from contracts.lib.bls_12_381.bls_12_381_gt import (
-    GTPoint, g12, gt_two, gt_three, gt_negone, gt_negtwo, gt_negthree)
+from contracts.lib.bls_12_381.bls_12_381_gt import g12, fq12_mul
 from contracts.lib.bls_12_381.bls_12_381_pair import gt_linefunc, pairing
 from contracts.lib.bls_12_381.bls_12_381_field import (
-    fq12_is_zero, FQ2, nondet_fq12, FQ12, assert_fq12_is_equal)
-from contracts.lib.bls_12_381.bls_12_381_g1 import g1, G1Point
-from contracts.lib.bls_12_381.bls_12_381_g2 import G2Point
+    fq12_is_zero, FQ2, nondet_fq12, FQ12, assert_fq12_is_equal, fq12_one)
+from contracts.lib.bls_12_381.bls_12_381_g1 import g1, G1Point, g1_negone
+from contracts.lib.bls_12_381.bls_12_381_g2 import G2Point, g2
 from contracts.lib.bigint.bigint6 import BigInt6
 
 # @Notice Testing the equality of two pairings derived from bls12-381 curves.
@@ -19,7 +18,7 @@ from contracts.lib.bigint.bigint6 import BigInt6
 # @param {signature} is deserialized G2 point of the signature in the third entry of extra/payload.json
 # @param {pub_key} is the deserialized G1 point of public key public_key in extra/drand.json
 # @param {msg_on_curve} is the previous_signature (3rd in extras/payload.json) + round (3rd entry in extras/payload.json) hashed to the bls12-381 curve
-func test_verify{range_check_ptr}() -> ():
+func test_verify_drand{range_check_ptr}() -> ():
     alloc_locals
 
     let (generator_1) = g1()
@@ -117,6 +116,163 @@ func test_verify{range_check_ptr}() -> ():
     return ()
 end
 
+func test_pairing_g1_mul_g2{range_check_ptr}() -> ():
+    alloc_locals
+
+    let (g_one) = g1()
+    let (g_two) = g2()
+
+    let (p1) = pairing(g_two, g_one)
+
+    let desired_res = FQ12(
+        e0=BigInt6(
+        d0=1990975770884977028,
+        d1=7767446592321502476,
+        d2=16522345575435859632,
+        d3=7644128085240456452,
+        d4=11812039377315346276,
+        d5=1595905830484019293,
+        ),
+        e1=BigInt6(
+        d0=17885520176185831091,
+        d1=5423534911467814785,
+        d2=7504391331950224140,
+        d3=2973556989001439003,
+        d4=17874209731732675292,
+        d5=476266876225452569,
+        ),
+        e2=BigInt6(
+        d0=7677718715906000350,
+        d1=15886597298094223646,
+        d2=4581604490783232357,
+        d3=9891841006135631689,
+        d4=16685808909381775029,
+        d5=898623410661343278,
+        ),
+        e3=BigInt6(
+        d0=7246854971180863950,
+        d1=2169887353992836472,
+        d2=11430352139935480427,
+        d3=9060736263656947316,
+        d4=4807270687175777966,
+        d5=109343983754950473,
+        ),
+        e4=BigInt6(
+        d0=6999268678892249388,
+        d1=10082433060938123587,
+        d2=14060541885863151935,
+        d3=4795961101061980583,
+        d4=14192757544331031054,
+        d5=1349352447261079491,
+        ),
+        e5=BigInt6(
+        d0=17836131686739309765,
+        d1=17108181119067608983,
+        d2=15718011700245005585,
+        d3=6675610338348864162,
+        d4=16514759222970747599,
+        d5=271480512774086705,
+        ),
+        e6=BigInt6(
+        d0=4195467559401864831,
+        d1=17826116083402014040,
+        d2=11799215460093230448,
+        d3=7662434289347384139,
+        d4=6604795441874810821,
+        d5=1530345683333496352,
+        ),
+        e7=BigInt6(
+        d0=6170547824364410940,
+        d1=5074553090179170658,
+        d2=10068443902566038546,
+        d3=17091902581826223961,
+        d4=11746071311482025310,
+        d5=1258767931794638597,
+        ),
+        e8=BigInt6(
+        d0=714383951174429535,
+        d1=4701333142292108801,
+        d2=18185012512246210661,
+        d3=246438992448698353,
+        d4=8241596464302165885,
+        d5=1648015829812454654,
+        ),
+        e9=BigInt6(
+        d0=11882945526034394317,
+        d1=15744607383066929664,
+        d2=3691113978165864391,
+        d3=18054759390624281060,
+        d4=3894456018756502861,
+        d5=728126088523876721,
+        ),
+        eA=BigInt6(
+        d0=16512580089937471943,
+        d1=11880175777650688844,
+        d2=1057922167372043599,
+        d3=2665440020709392870,
+        d4=9221161676179572894,
+        d5=1229590397142942377,
+        ),
+        eB=BigInt6(
+        d0=6439019714097769582,
+        d1=6683188422782918368,
+        d2=15497754192530577565,
+        d3=10833202628680126770,
+        d4=16931670167157974043,
+        d5=408860661728802227,
+        ))
+
+    assert_fq12_is_equal(p1, desired_res)
+    return ()
+end
+
+func test_pairing_negative{range_check_ptr}() -> ():
+    alloc_locals
+
+    let (g_one) = g1()
+    let (g_two) = g2()
+    let (g_negone) = g1_negone()
+
+    %{
+        import sys, os
+        cwd = os.getcwd()
+        sys.path.append(cwd)
+        from utils.bls_12_381_utils import print_g1, print_g2
+        cwd = os.getcwd()
+        sys.path.append(cwd)
+        print(print_g1("g1 ", ids.g_one))
+        print(print_g2("g2 ", ids.g_two))
+        print(print_g1("neg g_one ", ids.g_negone))
+    %}
+
+    let (p1) = pairing(g_two, g_one)
+    let (p2) = pairing(g_two, g_negone)
+
+    %{
+        import sys, os
+        cwd = os.getcwd()
+        sys.path.append(cwd)
+        from utils.bls_12_381_utils import print_fq12
+        print(print_fq12("p1 ", ids.p1))
+        print(print_fq12("p2 ", ids.p2))
+    %}
+
+    let (res) = fq12_mul(p1, p2)
+
+    %{
+        import sys, os
+        cwd = os.getcwd()
+        sys.path.append(cwd)
+        from utils.bls_12_381_utils import print_fq12
+        print(print_fq12("res ", ids.res))
+    %}
+
+    let (fq_12_one) = fq12_one()
+    assert_fq12_is_equal(res, fq_12_one)
+
+    return ()
+end
+
 func fq12_ex() -> (res : FQ12):
     return (
         FQ12(
@@ -146,8 +302,8 @@ func test_nondet_fq12{range_check_ptr}() -> ():
         # print("a*b =", value)
     %}
 
-    let slope = nondet_fq12()
-
+    let (slope) = nondet_fq12()
+    assert_fq12_is_equal(slope, ex)
     return ()
 end
 
@@ -165,7 +321,9 @@ end
 func main{range_check_ptr}() -> ():
     # test_nondet_fq12()
     # test_fq12_equality()
-    test_verify()
+    # test_verify_drand()
+    # test_pairing_negative()
+    test_pairing_g1_mul_g2()
     %{ print("all test passed") %}
     return ()
 end
