@@ -188,6 +188,15 @@ end
 func pairing{range_check_ptr}(Q : G2Point, P : G1Point) -> (res : FQ12):
     alloc_locals
     let (local twisted_Q : GTPoint) = twist(Q)
+
+    %{
+        import sys, os
+        cwd = os.getcwd()
+        sys.path.append(cwd)
+        from utils.bls_12_381_utils import print_g12
+        print(print_g12("twisted Q ", ids.twisted_Q))
+    %}
+
     let (local f : FQ12) = fq12_one()
     let (cast_P : GTPoint) = g1_to_gt(P)
     return miller_loop(Q=twisted_Q, P=cast_P, R=twisted_Q, n=log_ate_loop_count + 1, f=f)

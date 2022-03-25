@@ -218,32 +218,60 @@ end
 
 # ### TWISTING G2 INTO GT
 
+#
+# [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2001204777610833696708894912867952078278441409969503942666029068062015825245418932221343814564507832018947136279893, 0]
+func inv_twist_sq() -> (res : FQ12):
+    return (
+        FQ12(
+        e0=BigInt6(0, 0, 0, 0, 0, 0), e1=BigInt6(0, 0, 0, 0, 0, 0), e2=BigInt6(0, 0, 0, 0, 0, 0),
+        e3=BigInt6(0, 0, 0, 0, 0, 0), e4=BigInt6(1, 0, 0, 0, 0, 0), e5=BigInt6(0, 0, 0, 0, 0, 0),
+        e6=BigInt6(0, 0, 0, 0, 0, 0), e7=BigInt6(0, 0, 0, 0, 0, 0), e8=BigInt6(0, 0, 0, 0, 0, 0),
+        e9=BigInt6(0, 0, 0, 0, 0, 0), eA=BigInt6(d0=15924587544893707605, d1=1105070755758604287, d2=12941209323636816658, d3=12843041017062132063, d4=2706051889235351147, d5=936899308823769933), eB=BigInt6(0, 0, 0, 0, 0, 0),
+        ))
+end
+
+func inv_twist_cubed() -> (res : FQ12):
+    return (
+        FQ12(
+        e0=BigInt6(0, 0, 0, 0, 0, 0), e1=BigInt6(0, 0, 0, 0, 0, 0), e2=BigInt6(0, 0, 0, 0, 0, 0),
+        e3=BigInt6(1, 0, 0, 0, 0, 0), e4=BigInt6(0, 0, 0, 0, 0, 0), e5=BigInt6(0, 0, 0, 0, 0, 0),
+        e6=BigInt6(0, 0, 0, 0, 0, 0), e7=BigInt6(0, 0, 0, 0, 0, 0), e8=BigInt6(0, 0, 0, 0, 0, 0),
+        e9=BigInt6(d0=15924587544893707605, d1=1105070755758604287, d2=12941209323636816658, d3=12843041017062132063, d4=2706051889235351147, d5=936899308823769933), eA=BigInt6(0, 0, 0, 0, 0, 0), eB=BigInt6(0, 0, 0, 0, 0, 0),
+        ))
+end
+
 func twist{range_check_ptr}(P : G2Point) -> (res : GTPoint):
     let (zero : BigInt6) = fq_zero()
     tempvar x0 = P.x.e0
     tempvar x1 = P.x.e1
 
     let xx = BigInt6(
-        d0=x0.d0 - 9 * x1.d0,
-        d1=x0.d1 - 9 * x1.d1,
-        d2=x0.d2 - 9 * x1.d2,
-        d3=x0.d3 - 9 * x1.d3,
-        d4=x0.d4 - 9 * x1.d4,
-        d5=x0.d5 - 9 * x1.d5)
+        d0=x0.d0 - x1.d0,
+        d1=x0.d1 - x1.d1,
+        d2=x0.d2 - x1.d2,
+        d3=x0.d3 - x1.d3,
+        d4=x0.d4 - x1.d4,
+        d5=x0.d5 - x1.d5)
     let nxw2 = FQ12(zero, zero, xx, zero, zero, zero, zero, zero, x1, zero, zero, zero)
+
+    let (twist_sq) = inv_twist_sq()
+    let (twist_cubed) = inv_twist_cubed()
 
     tempvar y0 = P.y.e0
     tempvar y1 = P.y.e1
     let yy = BigInt6(
-        d0=y0.d0 - 9 * y1.d0,
-        d1=y0.d1 - 9 * y1.d1,
-        d2=y0.d2 - 9 * y1.d2,
-        d3=y0.d3 - 9 * y1.d3,
-        d4=y0.d4 - 9 * y1.d4,
-        d5=y0.d5 - 9 * y1.d5)
+        d0=y0.d0 - y1.d0,
+        d1=y0.d1 - y1.d1,
+        d2=y0.d2 - y1.d2,
+        d3=y0.d3 - y1.d3,
+        d4=y0.d4 - y1.d4,
+        d5=y0.d5 - y1.d5)
     let nyw3 = FQ12(zero, zero, zero, yy, zero, zero, zero, zero, zero, y1, zero, zero)
 
-    return (res=GTPoint(x=nxw2, y=nyw3))
+    let (twisted_x) = fq12_mul(nxw2, twist_cubed)
+    let (twisted_y) = fq12_mul(nyw3, twist_sq)
+
+    return (res=GTPoint(x=twisted_x, y=twisted_y))
 end
 
 # CONSTANTS
