@@ -1,4 +1,4 @@
-from .bls_12_138_curve import double, add, multiply, is_on_curve, neg, twist, b, b2, b12, curve_order, G1, G2, G12
+from .bls_12_381_curve import double, add, multiply, is_on_curve, neg, twist, b, b2, b12, curve_order, G1, G2, G12
 from .bls_12_381_field import field_modulus, FQ, FQ2, FQ12
 
 ate_loop_count = 15132376222941642752

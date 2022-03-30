@@ -16,7 +16,8 @@ func fq12_mul{range_check_ptr}(a : FQ12, b : FQ12) -> (res : FQ12):
         cwd = os.getcwd()
         sys.path.append(cwd)
         from utils.bls_12_381_field import FQ, FQ12
-        from utils.bls_12_381_utils import parse_fq12, print_g12
+        from utils.bls_12_381_utils import parse_fq12
+
         a = FQ12(list(map(FQ, parse_fq12(ids.a))))
         b = FQ12(list(map(FQ, parse_fq12(ids.b))))
         value = res = list(map(lambda x: x.n, (a*b).coeffs))
@@ -132,7 +133,6 @@ func fast_gt_add{range_check_ptr}(pt0 : GTPoint, pt1 : GTPoint) -> (res : GTPoin
     %{
         from utils.bls_12_381_field import FQ, FQ12
         from utils.bls_12_381_utils import parse_fq12
-
         # Compute the slope.
         x0 = FQ12(list(map(FQ, parse_fq12(ids.pt0.x))))
         x1 = FQ12(list(map(FQ, parse_fq12(ids.pt1.x))))
@@ -218,7 +218,7 @@ end
 
 # ### TWISTING G2 INTO GT
 
-#
+# inv(w ** 2)
 # [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2001204777610833696708894912867952078278441409969503942666029068062015825245418932221343814564507832018947136279893, 0]
 func inv_twist_sq() -> (res : FQ12):
     return (
@@ -230,6 +230,7 @@ func inv_twist_sq() -> (res : FQ12):
         ))
 end
 
+# inv(w ** 3)
 func inv_twist_cubed() -> (res : FQ12):
     return (
         FQ12(
@@ -241,18 +242,27 @@ func inv_twist_cubed() -> (res : FQ12):
 end
 
 func twist{range_check_ptr}(P : G2Point) -> (res : GTPoint):
+    alloc_locals
     let (zero : BigInt6) = fq_zero()
     tempvar x0 = P.x.e0
     tempvar x1 = P.x.e1
 
+    tempvar field_modulus = BigInt6(d0=13402431016077863595,
+        d1=2210141511517208575,
+        d2=7435674573564081700,
+        d3=7239337960414712511,
+        d4=5412103778470702295,
+        d5=1873798617647539866)
+
     let xx = BigInt6(
-        d0=x0.d0 - x1.d0,
-        d1=x0.d1 - x1.d1,
-        d2=x0.d2 - x1.d2,
-        d3=x0.d3 - x1.d3,
-        d4=x0.d4 - x1.d4,
-        d5=x0.d5 - x1.d5)
-    let nxw2 = FQ12(zero, zero, xx, zero, zero, zero, zero, zero, x1, zero, zero, zero)
+        d0=x0.d0 + field_modulus.d0 - x1.d0,
+        d1=x0.d1 + field_modulus.d1 - x1.d1,
+        d2=x0.d2 + field_modulus.d2 - x1.d2,
+        d3=x0.d3 + field_modulus.d3 - x1.d3,
+        d4=x0.d4 + field_modulus.d4 - x1.d4,
+        d5=x0.d5 + field_modulus.d5 - x1.d5)
+
+    let nxw2 = FQ12(xx, zero, zero, zero, zero, zero, x1, zero, zero, zero, zero, zero)
 
     let (twist_sq) = inv_twist_sq()
     let (twist_cubed) = inv_twist_cubed()
@@ -260,18 +270,22 @@ func twist{range_check_ptr}(P : G2Point) -> (res : GTPoint):
     tempvar y0 = P.y.e0
     tempvar y1 = P.y.e1
     let yy = BigInt6(
-        d0=y0.d0 - y1.d0,
-        d1=y0.d1 - y1.d1,
-        d2=y0.d2 - y1.d2,
-        d3=y0.d3 - y1.d3,
-        d4=y0.d4 - y1.d4,
-        d5=y0.d5 - y1.d5)
-    let nyw3 = FQ12(zero, zero, zero, yy, zero, zero, zero, zero, zero, y1, zero, zero)
+        d0=y0.d0 + field_modulus.d0 - y1.d0,
+        d1=y0.d1 + field_modulus.d1 - y1.d1,
+        d2=y0.d2 + field_modulus.d2 - y1.d2,
+        d3=y0.d3 + field_modulus.d3 - y1.d3,
+        d4=y0.d4 + field_modulus.d4 - y1.d4,
+        d5=y0.d5 + field_modulus.d5 - y1.d5)
 
-    let (twisted_x) = fq12_mul(nxw2, twist_cubed)
-    let (twisted_y) = fq12_mul(nyw3, twist_sq)
+    let nyw3 = FQ12(yy, zero, zero, zero, zero, zero, y1, zero, zero, zero, zero, zero)
 
-    return (res=GTPoint(x=twisted_x, y=twisted_y))
+    let (twisted_x) = fq12_mul(nxw2, twist_sq)
+
+    let (twisted_y) = fq12_mul(nyw3, twist_cubed)
+
+    let twisted = GTPoint(x=twisted_x, y=twisted_y)
+
+    return (twisted)
 end
 
 # CONSTANTS

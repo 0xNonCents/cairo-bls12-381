@@ -1,9 +1,10 @@
 from typing import List
 
 from starkware.cairo.common.math_utils import as_int
-
-PRIME = 0x1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffaaab
-BASE_PRIME = 0x73eda753299d7d483339d80809a1d80553bda402fffe5bfeffffffff00000001
+from .bls_12_381_field import field_modulus
+from .bls_12_381_curve import curve_order
+PRIME = field_modulus
+BASE_PRIME = curve_order
 
 
 def split(num: int) -> List[int]:
@@ -19,6 +20,13 @@ def split(num: int) -> List[int]:
 def pack(z):
 
     limbs = z.d0, z.d1, z.d2, z.d3, z.d4, z.d5
+
+    return sum(as_int(limb, PRIME) * 2 ** (64 * i) for i, limb in enumerate(limbs)) % BASE_PRIME
+
+
+def pack_from_arr(z):
+
+    limbs = z
 
     return sum(as_int(limb, PRIME) * 2 ** (64 * i) for i, limb in enumerate(limbs)) % BASE_PRIME
 
@@ -67,10 +75,6 @@ def print_g12(name, e):
     print_fq12("  y", e.y)
 
 
-curve_order = 52435875175126190479447740508185965837690552500527637822603658699938581184513
-field_modulus = 4002409555221667393417789825735904156556882819939007885332058136124031650490837864442687629129015664037894272559787
-
-
 def cairo_final_exponent():
     num = (field_modulus ** 12 - 1) // curve_order
     BASE = 2 ** (64 * 6)
@@ -93,10 +97,29 @@ def cairo_final_exponent():
     return res
 
 
+def cairo_bigint6_arr(arr):
+    print("FQ12(")
+    for i, x in enumerate(arr):
+        print('e{i}=')
+        cairo_bigint6(x)
+        print(', ')
+
+
 def cairo_bigint6(x):
     res = 'BigInt6('
     tmp = []
     for i, x in enumerate(split(x)):
         tmp.append(f'd{i}={x}')
-    res += ", ".join(tmp) + ")"
+    res += ",\n ".join(tmp) + ")"
     return res
+
+def cairo_bigint6_g2(g2):
+    x = g2[0]
+    y = g2[1]
+    print("G2Point(")
+    print("x=FQ2(e0="+ cairo_bigint6(x.coeffs[0].n) + ',')
+    print("e1=" + cairo_bigint6(x.coeffs[1].n))
+    print("),")
+    print("y=FQ2(e0=" +cairo_bigint6(y.coeffs[0].n))
+    print(",e1=" +cairo_bigint6(y.coeffs[1].n))
+    print("))")

@@ -323,7 +323,16 @@ func main{range_check_ptr}() -> ():
     # test_fq12_equality()
     # test_verify_drand()
     # test_pairing_negative()
+    %{
+        import time
+        tic = time.perf_counter()
+    %}
     test_pairing_g1_mul_g2()
+    %{
+        tac = time.perf_counter()
+        print(f"Pairing computed in {tac - tic:0.4f} seconds")
+    %}
+
     %{ print("all test passed") %}
     return ()
 end
