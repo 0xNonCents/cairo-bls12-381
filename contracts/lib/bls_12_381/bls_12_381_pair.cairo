@@ -194,7 +194,7 @@ func pairing{range_check_ptr}(Q : G2Point, P : G1Point) -> (res : FQ12):
         cwd = os.getcwd()
         sys.path.append(cwd)
         from utils.bls_12_381_utils import print_g12
-        print(print_g12("twisted Q ", ids.twisted_Q))
+        #print(print_g12("twisted Q ", ids.twisted_Q))
     %}
 
     let (local f : FQ12) = fq12_one()

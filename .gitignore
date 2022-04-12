@@ -1,6 +1,5 @@
 artifacts/
 test.json
-extra/results.txt
 *.cpython-39.pyc
 *.cpython-37.pyc
 *.pyc
