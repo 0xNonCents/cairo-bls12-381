@@ -8,7 +8,7 @@ from contracts.lib.bls_12_381.bls_12_381_pair import gt_linefunc, pairing
 from contracts.lib.bls_12_381.bls_12_381_field import (
     fq12_is_zero, FQ2, nondet_fq12, FQ12, assert_fq12_is_equal, fq12_one)
 from contracts.lib.bls_12_381.bls_12_381_g1 import g1, G1Point, g1_negone
-from contracts.lib.bls_12_381.bls_12_381_g2 import G2Point, g2
+from contracts.lib.bls_12_381.bls_12_381_g2 import G2Point, g2, g2_negone
 from contracts.lib.bigint.bigint6 import BigInt6
 
 # @Notice Testing the equality of two pairings derived from bls12-381 curves.
@@ -318,6 +318,42 @@ func test_fq12_equality{range_check_ptr}():
     return ()
 end
 
+func pairing_test{range_check_ptr}():
+    alloc_locals
+    let (local pt_g1 : G1Point) = g1()
+    let (local pt_ng1 : G1Point) = g1_negone()
+    let (local pt_g2 : G2Point) = g2()
+    let (local pt_ng2 : G2Point) = g2_negone()
+    let (local p1 : FQ12) = pairing(pt_g2, pt_g1)
+    %{
+        import sys, os
+        cwd = os.getcwd()
+        sys.path.append(cwd)
+
+        from utils.bls_12_381_field import FQ, FQ12
+        from utils.bls_12_381_utils import parse_fq12, print_g12
+        res = FQ12(list(map(FQ, parse_fq12(ids.p1))))
+        print("pair(g2, g1) =", res)
+    %}
+    let (local pn1 : FQ12) = pairing(pt_g2, pt_ng1)
+    let (local np1 : FQ12) = pairing(pt_ng2, pt_g1)
+    let (local mul1) = fq12_mul(p1, pn1)
+    let (local mul2) = fq12_mul(p1, np1)
+    %{
+        res_pn1 = FQ12(list(map(FQ, parse_fq12(ids.pn1))))
+        res_np1 = FQ12(list(map(FQ, parse_fq12(ids.np1))))
+        print("pair(g2, -g1) =", res_pn1)
+        print("pair(-g2, g1) =", res_np1)
+        mul1 = FQ12(list(map(FQ, parse_fq12(ids.mul1))))
+        mul2 = FQ12(list(map(FQ, parse_fq12(ids.mul1))))
+        print("pair(g2, g1) * pair(g2, -g1) =", mul1)
+        print("pair(g2, g1) * pair(-g2, g1) =", mul2)
+    %}
+
+    %{ print("pairing test passed") %}
+    return ()
+end
+
 func main{range_check_ptr}() -> ():
     # test_nondet_fq12()
     # test_fq12_equality()
@@ -327,7 +363,7 @@ func main{range_check_ptr}() -> ():
         import time
         tic = time.perf_counter()
     %}
-    test_pairing_g1_mul_g2()
+    pairing_test()
     %{
         tac = time.perf_counter()
         print(f"Pairing computed in {tac - tic:0.4f} seconds")
