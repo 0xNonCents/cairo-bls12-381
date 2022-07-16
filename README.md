@@ -1,5 +1,7 @@
 # BLS12-381 implemented in Cairo
 
+**Deprecated** please use [optimized ecc cairo](https://github.com/0xNonCents/optimized_ecc_cairo)
+
 A lot of code from [Tekkac's bn128 implementation](https://github.com/tekkac/cairo-alt_bn128)
 
 ## Some key differences
